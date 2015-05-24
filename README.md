@@ -48,7 +48,7 @@ are using Wordinserter requires you to pass the right one in explicitly.
 
 
 ### Install
-Get it [from PyPi here](https://pypi.python.org/pypi/wordinserter). This has been built with word 2010 and 2013, older 
+Get it [from PyPi here](https://pypi.python.org/pypi/wordinserter), using `pip install wordinserter`. This has been built with word 2010 and 2013, older 
 versions may produce different results.
 
 
