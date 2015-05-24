@@ -36,7 +36,18 @@ html = """
 </ul>
 """
 
+markdown = """
+### This is a title
+
+![I go below the image as a caption](http://placehold.it/150x150)
+
+*This is **some** text* in a [paragraph](http://google.com)
+
+  * Boo! I'm a **list**
+"""
+
 # Parse the HTML into a list of operations then feed them into render.
+# The Markdown can be parsed by using parser="markdown"
 operations = parse(html, parser="html")
 render(operations, document=document, constants=constants)
 ```
