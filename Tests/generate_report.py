@@ -144,7 +144,7 @@ if __name__ == "__main__":
             <thead>
                 <th>File Name</th>
                 <th>WordInserter Output</th>
-                <th>FireFox Output</th>
+                <th>Firefox Output</th>
             </thead>
             <tbody>
         """)
