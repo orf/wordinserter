@@ -14,6 +14,9 @@ Inserting HTML or Markdown into a Word document is a two step process: first the
 of operations, which is then *rendered* into a Word document. This library currently only supports inserting using the 
 Word COM interface which means it is Windows specific at the moment.
 
+There is a [comparison document](https://rawgit.com/orf/wordinserter/master/Tests/report.html) showing the output of 
+WordInserter against FireFox, check it out to see what the library can do.
+
 Below is a more complex example including starting word that will insert a representation of the HTML code
 into the new word document, including the image, caption and list.
 
