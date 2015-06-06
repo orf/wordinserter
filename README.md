@@ -7,7 +7,7 @@ word documents in pure Python (Python 3.x only at the moment). The API is really
 from wordinserter import parse, render
 
 operations = parse(html, parser="html") # or parser="markdown"
-insert(operations, document=document, constants=constants)
+render(operations, document=document, constants=constants)
 ```
     
 Inserting HTML or Markdown into a Word document is a two step process: first the input has to be parsed into a sequence 
