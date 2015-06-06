@@ -1,7 +1,7 @@
 WordInserter
 ===
 This module allows you to insert HTML or MarkDown into a Word Document, as well as allowing you to programmatically build 
-word documents in pure Python. The API is really simple to use:
+word documents in pure Python (Python 3.x only at the moment). The API is really simple to use:
 
 ``` python
 from wordinserter import parse, render
