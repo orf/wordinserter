@@ -22,6 +22,7 @@ temp_directory = pathlib.Path(tempfile.mkdtemp())
 
 word = CreateObject("Word.Application")
 word.Visible = False
+
 from comtypes.gen import Word as constants
 
 imagemagick = os.path.join(os.environ["MAGICK_HOME"], "convert.exe")

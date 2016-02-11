@@ -1,7 +1,7 @@
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHeading, Format
+    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format
 import bs4
 from functools import partial
 import cssutils
@@ -47,9 +47,11 @@ class HTMLParser(BaseParser):
             "html": Group,
 
             "table": Table,
+            "thead": TableHead,
+            "tbody": TableBody,
             "tr": TableRow,
             "td": TableCell,
-            "th": TableHeading,
+            "th": TableCell,
         }
 
     def parse(self, content):

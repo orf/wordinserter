@@ -3,7 +3,7 @@ import CommonMark
 
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHeading, Format, InlineCode
+    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, Format, InlineCode
 
 from .html import HTMLParser
 

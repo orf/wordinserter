@@ -199,7 +199,7 @@ class ListElement(Operation):
 
 
 class Table(Operation):
-    allowed_children = {"TableRow"}
+    allowed_children = {"TableRow", "TableHead", "TableBody"}
 
     @property
     def dimensions(self):
@@ -212,13 +212,17 @@ class Table(Operation):
         return len(self.children), len(self.children[0].children)
 
 
+class TableHead(IgnoredOperation):
+    allowed_children = {"TableRow"}
+
+
+class TableBody(IgnoredOperation):
+    allowed_children = {"TableRow"}
+
+
 class TableRow(Operation):
     allowed_children = {"TableCell"}
 
 
 class TableCell(Operation):
-    pass
-
-
-class TableHeading(TableCell):
     pass

@@ -1,6 +1,6 @@
 from . import BaseRenderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableHeading, Format, InlineCode
+    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableBody, TableHead, Format, InlineCode
 import warnings
 
 
@@ -204,12 +204,16 @@ class COMRenderer(BaseRenderer):
         table.Columns.AutoFit()
         end_range.Select()
 
+    @renders(TableHead, TableBody)
+    def table_item(self, op):
+        yield
+
     @renders(TableRow)
     def table_row(self, op):
         row_index = op.parent.children.index(op) + 1
         yield row_index,
 
-    @renders(TableCell, TableHeading)
+    @renders(TableCell)
     def table_cell(self, op, row_index):
         cell_index = op.parent.children.index(op) + 1
         cell_range = self.selection.Tables(1).Rows(row_index).Cells(cell_index).Range
