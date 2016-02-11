@@ -4,14 +4,14 @@ This module allows you to insert HTML or MarkDown into a Word Document, as well 
 word documents in pure Python (Python 3.x only at the moment). The API is really simple to use:
 
 ``` python
-from wordinserter import parse, render
+from wordinserter import parse, insert
 
 operations = parse(html, parser="html") # or parser="markdown"
-render(operations, document=document, constants=constants)
+insert(operations, document=document, constants=constants)
 ```
     
 Inserting HTML or Markdown into a Word document is a two step process: first the input has to be parsed into a sequence 
-of operations, which is then *rendered* into a Word document. This library currently only supports inserting using the 
+of operations, which is then *inserted* into a Word document. This library currently only supports inserting using the 
 Word COM interface which means it is Windows specific at the moment.
 
 There is a [comparison document](https://rawgit.com/orf/wordinserter/master/Tests/report.html) showing the output of 
@@ -21,7 +21,7 @@ Below is a more complex example including starting word that will insert a repre
 into the new word document, including the image, caption and list.
 
 ``` python
-from wordinserter import render, parse
+from wordinserter import insert, parse
 from comtypes.client import CreateObject
 
 # This opens Microsoft Word and creates a new document.
@@ -49,10 +49,10 @@ markdown = """
   * Boo! I'm a **list**
 """
 
-# Parse the HTML into a list of operations then feed them into render.
+# Parse the HTML into a list of operations then feed them into insert.
 # The Markdown can be parsed by using parser="markdown"
 operations = parse(html, parser="html")
-render(operations, document=document, constants=constants)
+insert(operations, document=document, constants=constants)
 ```
 
 What's with the constants part? Wordinserter is agnostic to the COM library you use. Each library exposes constant 
