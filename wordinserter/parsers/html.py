@@ -53,7 +53,7 @@ class HTMLParser(BaseParser):
         }
 
     def parse(self, content):
-        parser = bs4.BeautifulSoup(content)
+        parser = bs4.BeautifulSoup(content, "lxml")
 
         tokens = []
 
