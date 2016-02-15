@@ -1,9 +1,9 @@
 import abc
 import functools
 import inspect
+from ..operations import ChildlessOperation, IgnoredOperation, Group, Table
 import contextlib
-from ..operations import ChildlessOperation, IgnoredOperation, Group
-import sys
+from collections.abc import Iterable
 
 
 def renders(*operations):
@@ -26,16 +26,34 @@ def renders(*operations):
 
 
 class BaseRenderer(abc.ABC):
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, hooks=None):
         self.debug = debug
         self.render_methods = {}
+        self.hooks = hooks or {}
+
         for name, method in inspect.getmembers(self, inspect.ismethod):
             if hasattr(method, "renders_operations"):
                 for op in method.renders_operations:
                     self.render_methods[op] = method
 
+    def _call_hook(self, key, operation):
+        cls = operation.__class__
+        if key in self.hooks and cls in self.hooks[key]:
+            hooks = self.hooks[key][cls]
+            if not isinstance(hooks, Iterable):
+                hooks = [hooks]
+
+            for hook in hooks:
+                hook(operation, self)
+
+    @contextlib.contextmanager
+    def with_hooks(self, operation):
+        self._call_hook("pre", operation)
+        yield
+        self._call_hook("post", operation)
+
     @renders(IgnoredOperation, Group)
-    def ignored_element(self, op):
+    def ignored_element(self, *args, **kwargs):
         yield
 
     def render(self, operations):
@@ -48,14 +66,17 @@ class BaseRenderer(abc.ABC):
         for operation in operations:
             method = self.render_methods.get(operation.__class__, None)
             if method is None:
-                raise NotImplementedError("Operation {0} not supported by this renderer".format(operation.__class__.__name__))
+                raise NotImplementedError(
+                    "Operation {0} not supported by this renderer".format(operation.__class__.__name__))
 
-            if operation.format is not None and operation.format.__class__ in self.render_methods:
+            if operation.format is not None \
+                and operation.format.has_format() \
+                and operation.format.__class__ in self.render_methods:
                 format_func = self.render_methods[operation.format.__class__]
             else:
                 format_func = self.ignored_element
 
-            with format_func(operation.format):
+            with format_func(operation.format, operation), self.with_hooks(operation):
                 if isinstance(operation, ChildlessOperation):
 
                     if self.debug:
@@ -68,10 +89,7 @@ class BaseRenderer(abc.ABC):
                         method = debug_method(method, indent)
 
                     with method(operation, *args or []) as new_args:
-                        self._render(operation.children, new_args, indent+1)
-
-
-import contextlib
+                        self._render(operation.children, new_args, indent + 1)
 
 
 class debug_method(object):
@@ -86,13 +104,14 @@ class debug_method(object):
         return self
 
     def __enter__(self):
-        print((" " * self.indent) + self.operation.__class__.__name__)
+        print((" " * self.indent) + self.operation.__class__.__name__
+              + " " + (str(self.operation.format) if self.operation.format is not None else ""))
         return self.inner_manager.__enter__()
 
     def __exit__(self, *args):
-        print((" " * self.indent) + "/" + self.operation.__class__.__name__)
+        print((" " * self.indent) + "/" + self.operation.__class__.__name__
+              + " " + (str(self.operation.format) if self.operation.format is not None else ""))
         return self.inner_manager.__exit__(*args)
-
 
 
 from .com import COMRenderer

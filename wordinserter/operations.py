@@ -1,4 +1,6 @@
-import pprint
+
+class RenderData(object):
+    pass
 
 
 class Operation(object):
@@ -11,6 +13,8 @@ class Operation(object):
         self.children = children or []
         self.args = []
         self.format = None
+        self.attributes = kwargs.pop("attributes", {})
+        self.render = RenderData()
 
         for k in self.optional:
             setattr(self, k, None)
@@ -35,11 +39,33 @@ class Operation(object):
             self.add_child(child)
 
     def replace_child(self, child, new_child):
-        idx = self.children.index(child)
-        self.children[idx] = new_child
+        self.children[self.child_index(child)] = new_child
 
     def has_child(self, child_class):
         return any(isinstance(c, child_class) for c in self.children)
+
+    def child_index(self, child):
+        return self.children.index(child)
+
+    @property
+    def previous_sibling(self):
+        idx = self.parent.child_index(self)
+        if idx == 0:
+            return None
+
+        return self.parent[idx-1]
+
+    @property
+    def next_sibling(self):
+        idx = self.parent.child_index(self)
+        if idx == (len(self.parent) - 1):
+            return None
+
+        return self.parent[idx + 1]
+
+    @property
+    def has_children(self):
+        return len(self.children) > 0
 
     def __repr__(self):
         return "<{0}: {1}>".format(self.__class__.__name__, self.children)
@@ -52,6 +78,12 @@ class Operation(object):
 
         for child in self.children:
             child.set_parents(self)
+
+    def __len__(self):
+        return len(self.children)
+
+    def __getitem__(self, item):
+        return self.children[item]
 
 
 class ChildlessOperation(Operation):
@@ -129,38 +161,26 @@ class LineBreak(ChildlessOperation):
     pass
 
 
+class Span(Operation):
+    pass
+
+
 class Format(Operation):
     optional = {
         "style",
-        "font_size", "font_color"
+        "font_size",
+        "font_color",
+        "background_color",
+        "text_decoration",
+        "margins"
     }
 
-    @staticmethod
-    def rgbstring_to_wdcolor(value):
-        """
-        Transform a string like rgb(199,12,15) into a wdColor format used by word
-        :param value: A string like rgb(int,int,int)
-        :return: An integer representation that Word understands
-        """
-        left, right = value.find("("), value.find(")")
-        values = value[left+1:right].split(",")
-        rgblist = [v.strip() for v in values]
-        return int(rgblist[0]) + 0x100 * int(rgblist[1]) + 0x10000 * int(rgblist[2])
+    def has_format(self):
+        return any(getattr(self, name) for name in self.optional)
 
-    @staticmethod
-    def pixels_to_points(pixels):
-        """
-        Transform a pixel string into points (used by word).
-
-        :param pixels: string optionally ending in px
-        :return: an integer point representation
-        """
-        if isinstance(pixels, str):
-            if pixels.endswith("px"):
-                pixels = pixels[:-2]
-            pixels = int(pixels)
-
-        return pixels * 0.75
+    def __repr__(self):
+        return "<{0}: {1}>".format(self.__class__.__name__,
+                                   {n: getattr(self, n) for n in self.optional if getattr(self, n) is not None})
 
 
 class Style(Operation):
@@ -200,6 +220,7 @@ class ListElement(Operation):
 
 class Table(Operation):
     allowed_children = {"TableRow", "TableHead", "TableBody"}
+    optional = {"border"}
 
     @property
     def dimensions(self):
@@ -208,8 +229,11 @@ class Table(Operation):
         """
         if not self.children:
             return 0, 0
-        # This assumes that the number of columns is uniform. Should be improved.
-        return len(self.children), len(self.children[0].children)
+
+        rows = len(self.children)
+        columns = max(sum(child.colspan or 1 for child in row.children) for row in self.children)
+
+        return rows, columns
 
 
 class TableHead(IgnoredOperation):
@@ -225,4 +249,8 @@ class TableRow(Operation):
 
 
 class TableCell(Operation):
+    optional = {"colspan", "rowspan"}
+
+
+class Footnote(ChildlessOperation):
     pass

@@ -1,7 +1,9 @@
+from collections import defaultdict
+
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format
+    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span
 import bs4
 from functools import partial
 import cssutils
@@ -32,6 +34,7 @@ class HTMLParser(BaseParser):
             "u": UnderLine,
             "pre": CodeBlock,
             "div": Group,
+            "span": Span,
 
             "h1": partial(Style, name="Heading 1"),
             "h2": partial(Style, name="Heading 2"),
@@ -52,6 +55,8 @@ class HTMLParser(BaseParser):
             "tr": TableRow,
             "td": TableCell,
             "th": TableCell,
+
+            "footnote": Footnote
         }
 
     def parse(self, content):
@@ -90,8 +95,8 @@ class HTMLParser(BaseParser):
 
         if cls is Image:
             cls = partial(Image,
-                          height=element.attrs.get("height", None),
-                          width=element.attrs.get("width", None),
+                          height=int(element.attrs.get("height", 0)),
+                          width=int(element.attrs.get("width", 0)),
                           caption=element.attrs.get("alt", None),
                           location=element.attrs["src"])
         elif cls is HyperLink:
@@ -99,8 +104,14 @@ class HTMLParser(BaseParser):
                 cls = IgnoredOperation
             else:
                 cls = partial(HyperLink, location=element.attrs["href"])
+        elif cls is TableCell:
+            cls = partial(TableCell,
+                          colspan=int(element.attrs.get("colspan", 1)),
+                          rowspan=int(element.attrs.get("rowspan", 1)))
+        elif cls is Table:
+            cls = partial(Table, border=element.attrs.get("border", "1"))
 
-        instance = cls()
+        instance = cls(attributes=element.attrs)
 
         if cls in self.respect_whitespace:
             whitespace = "respect"
@@ -133,15 +144,23 @@ class HTMLParser(BaseParser):
 
         for attribute, value in element.attrs.items():
             if attribute == "class" and value:
-                # ToDo: Handle multiple classes? Idk.
-                args["style"] = value[0]
+                # This selects the first one which isn't an empty string. We could handle multiple classes here somehow.
+                args["style"] = [v for v in value if v][0]
             elif attribute == "style":
                 styles = cssutils.parseStyle(value)
+                args["margins"] = defaultdict(str)
+
                 for style in styles:
                     if style.name == "font-size":
-                        args["font_size"] = Format.pixels_to_points(style.value)
+                        args["font_size"] = style.value
                     elif style.name == "color":
-                        args["font_color"] = Format.rgbstring_to_wdcolor(style.value)
+                        args["font_color"] = style.value
+                    elif style.name == "background-color":
+                        args["background_color"] = style.value
+                    elif style.name == "text-decoration":
+                        args["text_decoration"] = style.value
+                    elif style.name.startswith("margin-"):
+                        args["margins"][style.name.replace("margin-", "")] = style.value
 
         if args:
             instance.format = Format(**args)
