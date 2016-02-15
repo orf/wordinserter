@@ -6,7 +6,6 @@ setup(
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',
-
     author='Tom',
     author_email='tom@tomforb.es',
     description='Render HTML and Markdown to a specific portion of a word document',
