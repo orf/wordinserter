@@ -145,7 +145,9 @@ class HTMLParser(BaseParser):
         for attribute, value in element.attrs.items():
             if attribute == "class" and value:
                 # This selects the first one which isn't an empty string. We could handle multiple classes here somehow.
-                args["style"] = [v for v in value if v][0]
+                vals = [v for v in value if v]
+                if vals:
+                    args["style"] = vals[0]
             elif attribute == "style":
                 styles = cssutils.parseStyle(value)
                 args["margins"] = defaultdict(str)

@@ -25,7 +25,7 @@ word.Visible = False
 
 from comtypes.gen import Word as constants
 
-imagemagick = os.path.join(os.environ["MAGICK_HOME"], "convert.exe")
+imagemagick = "convert.exe"
 
 # [(file name, word image, html image)]
 results = []
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     browser = webdriver.Firefox()
 
     for file in file_names:
-        if file.name.endswith(".html") or file.name.endswith(".md"):
+        if file.name.endswith(".html"):
 
             document = word.Documents.Add()
 

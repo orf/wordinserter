@@ -293,6 +293,15 @@ class COMRenderer(BaseRenderer):
     def table(self, op: Table):
         table_range = self.selection.Range
         self.selection.TypeParagraph()
+
+        if isinstance(op.parent, TableCell):
+            # There appears to be a bug in Word. If you are in a table cell and add a new table
+            # then it appears to only add one row. We get around this by adding a new paragraph, then using that
+            # range to insert. This ends up with an unrequested space/margin, but it's better than nothing.
+            self.selection.Range.Select()
+            table_range = self.selection.Range
+            self.selection.TypeParagraph()
+
         end_range = self.selection.Range
 
         rows, columns = op.dimensions
@@ -306,8 +315,7 @@ class COMRenderer(BaseRenderer):
         table.Style = "Table Grid"
         table.AllowAutoFit = True
 
-        if op.border == '0':
-            table.Borders.Enable = 0
+        table.Borders.Enable = 0 if op.border == '0' else 1
 
         cell_mapping = [
             list(row.Cells) for row in table.Rows

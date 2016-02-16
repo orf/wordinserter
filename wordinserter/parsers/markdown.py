@@ -10,10 +10,11 @@ from .html import HTMLParser
 
 class MarkdownParser(BaseParser):
     def __init__(self):
+        raise RuntimeError("Markdown is not supported at this time. Blame the CommonMark Library")
         self.html_parser = HTMLParser()
 
     def parse(self, content):
-        p = CommonMark.DocParser()
+        p = CommonMark.Parser()
         ast = p.parse(content)
 
         returner = []
