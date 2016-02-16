@@ -313,6 +313,13 @@ class COMRenderer(BaseRenderer):
             list(row.Cells) for row in table.Rows
             ]
 
+        processed_cells = set()
+
+        # Handling merged cells is a bitch. We do it by finding the max dimensions of the table (the max sum of all
+        # colspans in a row) then creating a table with those dimensions.
+        # We then enumerate through each cell in each row, and find the corresponding word cell (the actual table cell)
+        # If it has a colspan we
+
         for row_index, row in enumerate(op):
             # Loop through each row and extract the corresponding Row object from Word
             row_cells = cell_mapping[row_index]
@@ -320,6 +327,16 @@ class COMRenderer(BaseRenderer):
             for column_index, cell in enumerate(row):
                 # For each cell/column in our row extract the table cell from Word
                 word_cell = row_cells[column_index]
+
+                if word_cell is None or word_cell in processed_cells:
+                    # Skip forward and find the next unprocessed cell
+                    for possible_cell in row_cells[column_index:]:
+                        if possible_cell is not None and possible_cell not in processed_cells:
+                            word_cell = possible_cell
+                            column_index = row_cells.index(word_cell)
+                            break
+                    else:
+                        raise RuntimeError("Something went wrong!")
 
                 if cell.colspan > 1:
                     # If the cell has a colspan of more than 1 we need to get the 0-indexed
@@ -352,6 +369,7 @@ class COMRenderer(BaseRenderer):
                         cell_mapping[idx][column_index:column_index + cell.colspan or 0] = (None for _ in range(slice_length))
 
                 cell.render.cell_object = word_cell
+                processed_cells.add(word_cell)
 
         table.Select()
         op.render.table = table
