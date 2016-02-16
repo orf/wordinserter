@@ -335,8 +335,6 @@ class COMRenderer(BaseRenderer):
                             word_cell = possible_cell
                             column_index = row_cells.index(word_cell)
                             break
-                    else:
-                        raise RuntimeError("Something went wrong!")
 
                 if cell.colspan > 1:
                     # If the cell has a colspan of more than 1 we need to get the 0-indexed

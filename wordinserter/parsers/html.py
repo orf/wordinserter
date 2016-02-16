@@ -177,4 +177,6 @@ class HTMLParser(BaseParser):
                 else:
                     break
 
+        instance.set_source(element)
+
         return instance

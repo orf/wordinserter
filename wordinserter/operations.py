@@ -16,6 +16,8 @@ class Operation(object):
         self.attributes = kwargs.pop("attributes", {})
         self.render = RenderData()
 
+        self.source = None
+
         for k in self.optional:
             setattr(self, k, None)
 
@@ -28,6 +30,9 @@ class Operation(object):
             for child in self.children:
                 if child.__class__.__name__ not in self.allowed_children:
                     raise RuntimeError("Child {0} is not allowed!".format(child.__class__.__name__))
+
+    def set_source(self, source):
+        self.source = source
 
     def add_child(self, child):
         if self.allowed_children and child.__class__.__name__ not in self.allowed_children:

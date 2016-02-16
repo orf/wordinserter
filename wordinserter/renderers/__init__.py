@@ -1,7 +1,7 @@
 import abc
-import functools
 import inspect
-from ..operations import ChildlessOperation, IgnoredOperation, Group, Table
+from wordinserter.operations import ChildlessOperation, IgnoredOperation, Group
+from wordinserter.exceptions import InsertError
 import contextlib
 from collections.abc import Iterable
 
@@ -10,17 +10,13 @@ def renders(*operations):
     def _wrapper(func):
         func.renders_operations = operations
 
-        @functools.wraps(func)
-        def _inner(*args, **kwargs):
-            return func(*args, **kwargs)
-
         if any(isinstance(op, ChildlessOperation) for op in operations):
             if not all(isinstance(op, ChildlessOperation) for op in operations):
                 raise Exception("Cannot mix ChildlessOperations and normal Operations")
 
             return func
 
-        return contextlib.contextmanager(_inner)
+        return contextlib.contextmanager(func)
 
     return _wrapper
 
@@ -76,23 +72,28 @@ class BaseRenderer(abc.ABC):
             else:
                 format_func = self.ignored_element
 
-            with format_func(operation.format, operation), self.with_hooks(operation):
-                if isinstance(operation, ChildlessOperation):
+            try:
+                with format_func(operation.format, operation), self.with_hooks(operation):
+                    if isinstance(operation, ChildlessOperation):
 
-                    if self.debug:
-                        print((" " * indent) + operation.__class__.__name__)
+                        if self.debug:
+                            print((" " * indent) + operation.__class__.__name__)
 
-                    method(operation, *args or [])
+                        method(operation, *args or [])
 
-                else:
-                    if self.debug:
-                        method = debug_method(method, indent)
+                    else:
+                        if self.debug:
+                            method = DebugMethod(method, indent)
 
-                    with method(operation, *args or []) as new_args:
-                        self._render(operation.children, new_args, indent + 1)
+                        with method(operation, *args or []) as new_args:
+                            self._render(operation.children, new_args, indent + 1)
+            except InsertError:
+                raise
+            except Exception as e:
+                raise InsertError(operation) from e
 
 
-class debug_method(object):
+class DebugMethod(object):
     def __init__(self, method, indent):
         self.method = method
         self.indent = indent

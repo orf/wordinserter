@@ -92,4 +92,5 @@ class MarkdownParser(BaseParser):
 
             obj.add_child(result)
 
+        obj.set_source(node)
         return obj
