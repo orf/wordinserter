@@ -129,6 +129,13 @@ class UnderLine(Operation):
 class Text(ChildlessOperation):
     requires = {"text"}
 
+    def __repr__(self):
+        if len(self.text) > 10:
+            txt = self.text[:10] + "..."
+        else:
+            txt = self.text
+        return "<Text '{0}' />".format(txt)
+
     def strip_whitespace(self):
         return Text(text=self.text.strip())
 

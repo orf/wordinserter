@@ -180,13 +180,11 @@ class COMRenderer(BaseRenderer):
         previous_style = self.selection.Style
         previous_font_name, previous_font_size = self.selection.Font.Name, self.selection.Font.Size
         self.selection.Font.Name = "Courier New"
-        self.selection.Font.Size = 7
 
         yield
 
         self.selection.Style = previous_style
         self.selection.Font.Name = previous_font_name
-        self.selection.Font.Size = previous_font_size
 
     @renders(CodeBlock)
     def code_block(self, op: CodeBlock):
@@ -196,7 +194,6 @@ class COMRenderer(BaseRenderer):
                                                                      self.selection.ParagraphFormat.LineSpacingRule
         self.selection.Style = self.document.Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
-        self.selection.Font.Size = 7
 
         yield
 
@@ -204,7 +201,6 @@ class COMRenderer(BaseRenderer):
         self.selection.TypeParagraph()
         self.selection.Style = previous_style
         self.selection.Font.Name = previous_font_name
-        self.selection.Font.Size = previous_font_size
 
     @renders(Image)
     def image(self, op: Image):

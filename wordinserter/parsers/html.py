@@ -127,7 +127,7 @@ class HTMLParser(BaseParser):
             if item is None:
                 continue
 
-            if isinstance(item, Text):
+            if isinstance(item, Text) and not whitespace == 'preserve':
                 if len(children) != 1:
                     item = item.keep_some_whitespace()
 
