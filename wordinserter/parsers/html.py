@@ -17,7 +17,7 @@ class HTMLParser(BaseParser):
         }
         # Strip whitespace but keep spaces between tags
         self.respect_whitespace = {
-            Bold, Italic, UnderLine, TableCell, Style, HyperLink
+            Bold, Italic, UnderLine, Style, HyperLink
         }
 
         # Ignore all whitespace
