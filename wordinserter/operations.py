@@ -73,7 +73,12 @@ class Operation(object):
         return len(self.children) > 0
 
     def __repr__(self):
-        return "<{0}: {1}>".format(self.__class__.__name__, self.children)
+        if len(self.children) == 1:
+            child_repr = repr(self.children[0])
+        else:
+            child_repr = repr(self.children)
+
+        return "<{0}: {1}>".format(self.__class__.__name__, child_repr)
 
     def set_parent(self, parent):
         self.parent = parent
