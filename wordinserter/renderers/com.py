@@ -195,7 +195,10 @@ class COMRenderer(BaseRenderer):
         self.selection.Style = self.document.Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
 
-        yield
+        if op.highlight:
+            yield self.new_operations(op.highlighted_operations())
+        else:
+            yield
 
         self.selection.ParagraphFormat.LineSpacingRule = previous_linespace
         self.selection.TypeParagraph()

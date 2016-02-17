@@ -167,7 +167,24 @@ class BlockParagraph(Operation):
 
 
 class CodeBlock(Operation):
-    pass
+    optional = {"highlight", "text"}
+
+    def highlighted_operations(self):
+        from pygments.lexers import get_lexer_by_name
+        from pygments.util import ClassNotFound
+        from pygments import highlight
+        from pygments.formatters import HtmlFormatter
+        from wordinserter import parse
+        import warnings
+
+        try:
+            lexer = get_lexer_by_name(self.highlight)
+        except ClassNotFound:
+            warnings.warn("Lexer {0} not found, not highlighting".format(self.highlight))
+            return None
+
+        highlighted_code = highlight(self.text, lexer=lexer, formatter=HtmlFormatter(noclasses=True))
+        return parse(highlighted_code, parser="html")
 
 
 class InlineCode(Operation):

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import platform
 import warnings
 
-requires = ["BeautifulSoup4", "cssutils", 'CommonMark', 'requests', 'webcolors']
+requires = ["BeautifulSoup4", "cssutils", 'CommonMark', 'requests', 'webcolors', 'pygments']
 
 if platform.system() == "Windows":
     requires.append("pypiwin32")
@@ -13,7 +13,7 @@ else:
 
 setup(
     name='wordinserter',
-    version='0.6.7',
+    version='0.6.8',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',

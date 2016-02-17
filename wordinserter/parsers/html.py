@@ -17,7 +17,7 @@ class HTMLParser(BaseParser):
         }
         # Strip whitespace but keep spaces between tags
         self.respect_whitespace = {
-            Paragraph, Bold, Italic, UnderLine, TableCell, Style, HyperLink
+            Bold, Italic, UnderLine, TableCell, Style, HyperLink
         }
 
         # Ignore all whitespace
@@ -71,8 +71,6 @@ class HTMLParser(BaseParser):
                 continue
 
             tokens.append(item)
-        #import pprint
-        #pprint.pprint(tokens)
         return tokens
 
     def build_element(self, element, whitespace="ignore"):
@@ -110,8 +108,13 @@ class HTMLParser(BaseParser):
                           rowspan=int(element.attrs.get("rowspan", 1)))
         elif cls is Table:
             cls = partial(Table, border=element.attrs.get("border", "1"))
+        elif cls is CodeBlock:
+            highlight = element.attrs.get("highlight")
+            text = element.getText()
+            cls = partial(CodeBlock, highlight=highlight, text=text)
 
         instance = cls(attributes=element.attrs)
+        cls = instance.__class__
 
         if cls in self.respect_whitespace:
             whitespace = "respect"

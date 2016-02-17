@@ -21,6 +21,11 @@ def renders(*operations):
     return _wrapper
 
 
+class NewOperations(object):
+    def __init__(self, ops):
+        self.ops = ops
+
+
 class BaseRenderer(abc.ABC):
     def __init__(self, debug=False, hooks=None):
         self.debug = debug
@@ -41,6 +46,9 @@ class BaseRenderer(abc.ABC):
 
             for hook in hooks:
                 hook(operation, self)
+
+    def new_operations(self, operations):
+        return NewOperations(operations)
 
     @contextlib.contextmanager
     def with_hooks(self, operation):
@@ -86,7 +94,10 @@ class BaseRenderer(abc.ABC):
                             method = DebugMethod(method, indent)
 
                         with method(operation, *args or []) as new_args:
-                            self._render(operation.children, new_args, indent + 1)
+                            if isinstance(new_args, NewOperations):
+                                self._render(new_args.ops, None, indent + 1)
+                            else:
+                                self._render(operation.children, new_args, indent + 1)
             except InsertError:
                 raise
             except Exception as e:
