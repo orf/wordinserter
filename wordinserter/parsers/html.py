@@ -17,7 +17,7 @@ class HTMLParser(BaseParser):
         }
         # Strip whitespace but keep spaces between tags
         self.respect_whitespace = {
-            Bold, Italic, UnderLine, Style, HyperLink
+            Bold, Italic, UnderLine, Style, HyperLink, Paragraph
         }
 
         # Ignore all whitespace
@@ -179,6 +179,10 @@ class HTMLParser(BaseParser):
                     instance.children.remove(first)
                 elif hasattr(last, "text") and last.text.isspace():
                     instance.children.remove(last)
+                elif first is last:
+                    # Only one child, strip da text
+                    instance[0].text = instance[0].text.strip()
+                    break
                 else:
                     break
 
