@@ -1,5 +1,4 @@
 from . import BaseParser, ParseException
-import CommonMark
 
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
