@@ -60,19 +60,22 @@ class WordFormatter(object):
         return WordFormatter.hex_to_wdcolor(value)
 
     @staticmethod
-    def pixels_to_points(pixels):
+    def font_size_to_points(css_value):
         """
         Transform a pixel string into points (used by word).
 
-        :param pixels: string optionally ending in px
+        :param css_value: string optionally ending in px/pt
         :return: an integer point representation
         """
-        if isinstance(pixels, str):
-            if pixels.endswith("px"):
-                pixels = pixels[:-2]
-            pixels = int(pixels)
+        if isinstance(css_value, str):
+            if css_value.endswith("px"):
+                css_value = css_value[:-2]
+            elif css_value.endswith("pt"):
+                return int(css_value[:-2])
 
-        return pixels * 0.75
+            css_value = int(css_value)
+
+        return css_value * 0.75
 
 
 class COMRenderer(BaseRenderer):
@@ -415,7 +418,7 @@ class COMRenderer(BaseRenderer):
                 warnings.warn("Unable to apply style name '{0}'".format(op.style))
 
         if op.font_size:
-            size = WordFormatter.pixels_to_points(op.font_size)
+            size = WordFormatter.font_size_to_points(op.font_size)
             if size:
                 element_range.Font.Size = size
 
