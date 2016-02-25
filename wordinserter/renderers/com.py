@@ -374,7 +374,8 @@ class COMRenderer(BaseRenderer):
                     # is still uniform.
                     for idx in range(row_index + 1, row_index + cell.rowspan):
                         slice_length = len(cell_mapping[idx][column_index:column_index + cell.colspan or 0])
-                        cell_mapping[idx][column_index:column_index + cell.colspan or 0] = (None for _ in range(slice_length))
+                        cell_mapping[idx][column_index:column_index + cell.colspan or 0] = (None for _ in
+                                                                                            range(slice_length))
 
                 cell.render.cell_object = word_cell
                 processed_cells.add(word_cell)
@@ -441,5 +442,15 @@ class COMRenderer(BaseRenderer):
             bg_color = WordFormatter.style_to_highlight_wdcolor(op.background_color, self.constants)
             if bg_color:
                 element_range.HighlightColorIndex = bg_color
+
+        if op.vertical_align:
+            if isinstance(parent_operation, TableCell):
+                alignment = {
+                    'top': self.constants.wdCellAlignVerticalTop,
+                    'middle': self.constants.wdCellAlignVerticalCenter,
+                    'bottom': self.constants.wdCellAlignVerticalBottom
+                }
+                if op.vertical_align in alignment:
+                    parent_operation.render.cell_object.VerticalAlignment = alignment[op.vertical_align]
 
         self.selection.TypeBackspace()

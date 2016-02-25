@@ -206,7 +206,8 @@ class Format(Operation):
         "font_color",
         "background_color",
         "text_decoration",
-        "margins"
+        "margins",
+        "vertical_align"
     }
 
     def has_format(self):
