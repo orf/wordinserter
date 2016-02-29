@@ -224,8 +224,12 @@ class COMRenderer(BaseRenderer):
 
             location = temp.name
 
-            image = self.selection.InlineShapes.AddPicture(
-                FileName=location)
+            if isinstance(op.parent, TableCell):
+                rng = op.parent.render.cell_object.Range
+            else:
+                rng = self.selection
+
+            image = rng.InlineShapes.AddPicture(FileName=location)
 
             if op.height:
                 image.Height = op.height * 0.75
