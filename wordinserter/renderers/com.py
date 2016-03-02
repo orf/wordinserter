@@ -457,4 +457,14 @@ class COMRenderer(BaseRenderer):
                 if op.vertical_align in alignment:
                     parent_operation.render.cell_object.VerticalAlignment = alignment[op.vertical_align]
 
+        if op.horizontal_align:
+            if isinstance(parent_operation, TableCell):
+                alignment = {
+                    'center': self.constants.wdAlignParagraphCenter,
+                    'left': self.constants.wdAlignParagraphLeft,
+                    'right': self.constants.wdAlignParagraphRight
+                }
+                if op.horizontal_align in alignment:
+                    parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.horizontal_align]
+
         self.selection.TypeBackspace()

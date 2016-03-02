@@ -170,6 +170,8 @@ class HTMLParser(BaseParser):
                         args["margins"][style.name.replace("margin-", "")] = style.value
                     elif style.name == "vertical-align":
                         args["vertical_align"] = style.value
+                    elif style.name == "text-align":
+                        args['horizontal_align'] = style.value
 
         if args:
             instance.format = Format(**args)
