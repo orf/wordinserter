@@ -3,7 +3,8 @@ from collections import defaultdict
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span
+    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
+    LineBreak
 import bs4
 from functools import partial
 import cssutils
@@ -56,7 +57,8 @@ class HTMLParser(BaseParser):
             "td": TableCell,
             "th": TableCell,
 
-            "footnote": Footnote
+            "footnote": Footnote,
+            "br": LineBreak
         }
 
     def parse(self, content):
