@@ -1,4 +1,4 @@
-## 0.7
+## 0.7.1
 Added support for tables with percentage widths.
 
 ## 0.6.13

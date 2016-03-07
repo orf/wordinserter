@@ -386,10 +386,7 @@ class COMRenderer(BaseRenderer):
 
         op.render.table = table
 
-        table_size = sum(c.Width for c in table.Rows(1).Cells)
-        op.render.table_size = table_size
-
-        if op.format.width and op.format.width.endswith("%"):
+        if op.format is not None and op.format.width and op.format.width.endswith("%"):
             table_width = float(op.format.width[:-1])
             table.PreferredWidthType = self.constants.wdPreferredWidthPercent
             table.PreferredWidth = max(0, min(table_width, 100))
