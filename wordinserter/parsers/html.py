@@ -158,20 +158,12 @@ class HTMLParser(BaseParser):
                 args["margins"] = defaultdict(str)
 
                 for style in styles:
-                    if style.name == "font-size":
-                        args["font_size"] = style.value
-                    elif style.name == "color":
-                        args["font_color"] = style.value
-                    elif style.name == "background-color":
-                        args["background_color"] = style.value
-                    elif style.name == "text-decoration":
-                        args["text_decoration"] = style.value
-                    elif style.name.startswith("margin-"):
+                    if style.name.startswith("margin-"):
                         args["margins"][style.name.replace("margin-", "")] = style.value
-                    elif style.name == "vertical-align":
-                        args["vertical_align"] = style.value
-                    elif style.name == "text-align":
-                        args['horizontal_align'] = style.value
+                    else:
+                        name = style.name.lower().replace("-", "_")
+                        if name in Format.optional:
+                            args[name] = style.value
 
         if args:
             instance.format = Format(**args)

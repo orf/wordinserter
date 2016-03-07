@@ -1,3 +1,6 @@
+## 0.7
+Added support for tables with percentage widths.
+
 ## 0.6.13
 Added support for text-align CSS classes inside tables
 

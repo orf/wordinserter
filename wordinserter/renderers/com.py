@@ -384,9 +384,30 @@ class COMRenderer(BaseRenderer):
                 cell.render.cell_object = word_cell
                 processed_cells.add(word_cell)
 
-        table.Select()
         op.render.table = table
 
+        table_size = sum(c.Width for c in table.Rows(1).Cells)
+        op.render.table_size = table_size
+
+        if op.format.width and op.format.width.endswith("%"):
+            table_width = float(op.format.width[:-1])
+            table.PreferredWidthType = self.constants.wdPreferredWidthPercent
+            table.PreferredWidth = max(0, min(table_width, 100))
+
+            for row_child in op.children:
+                for cell_child in row_child.children:
+                    try:
+                        cell_width = float(cell_child.format.width[:-1])
+                    except TypeError:
+                        raise RuntimeError("Invalid row width {0}".format(cell_child.format.width))
+
+                    cell_o = cell_child.render.cell_object
+                    cell_o.PreferredWidthType = self.constants.wdPreferredWidthPercent
+                    cell_o.PreferredWidth = cell_width
+
+            table.AllowAutoFit = False
+
+        table.Select()
         yield
 
         end_range.Select()
@@ -427,8 +448,8 @@ class COMRenderer(BaseRenderer):
             if size:
                 element_range.Font.Size = size
 
-        if op.font_color:
-            col = WordFormatter.style_to_wdcolor(op.font_color)
+        if op.color:
+            col = WordFormatter.style_to_wdcolor(op.color)
             if col:
                 element_range.Font.Color = col
 
@@ -457,14 +478,14 @@ class COMRenderer(BaseRenderer):
                 if op.vertical_align in alignment:
                     parent_operation.render.cell_object.VerticalAlignment = alignment[op.vertical_align]
 
-        if op.horizontal_align:
+        if op.text_align:
             if isinstance(parent_operation, TableCell):
                 alignment = {
                     'center': self.constants.wdAlignParagraphCenter,
                     'left': self.constants.wdAlignParagraphLeft,
                     'right': self.constants.wdAlignParagraphRight
                 }
-                if op.horizontal_align in alignment:
-                    parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.horizontal_align]
+                if op.text_align in alignment:
+                    parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.text_align]
 
         self.selection.TypeBackspace()

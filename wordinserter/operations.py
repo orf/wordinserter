@@ -203,12 +203,14 @@ class Format(Operation):
     optional = {
         "style",
         "font_size",
-        "font_color",
+        "color",
         "background_color",
         "text_decoration",
         "margins",
         "vertical_align",
-        "horizontal_align"
+        "text_align",
+        "width",
+        "height"
     }
 
     def has_format(self):
