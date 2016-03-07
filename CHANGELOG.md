@@ -1,3 +1,6 @@
+## 0.7.2
+Fixes for table cells with no width, also always ensure a `Format` object is attached to an Operation.
+
 ## 0.7.1
 Added support for tables with percentage widths.
 

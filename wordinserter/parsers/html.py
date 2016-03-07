@@ -165,8 +165,7 @@ class HTMLParser(BaseParser):
                         if name in Format.optional:
                             args[name] = style.value
 
-        if args:
-            instance.format = Format(**args)
+        instance.format = Format(**args)
 
         if cls in (Paragraph,):
             # Respect it but trim it on the ends

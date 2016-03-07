@@ -386,13 +386,16 @@ class COMRenderer(BaseRenderer):
 
         op.render.table = table
 
-        if op.format is not None and op.format.width and op.format.width.endswith("%"):
+        if op.format.width and op.format.width.endswith("%"):
             table_width = float(op.format.width[:-1])
             table.PreferredWidthType = self.constants.wdPreferredWidthPercent
             table.PreferredWidth = max(0, min(table_width, 100))
 
             for row_child in op.children:
                 for cell_child in row_child.children:
+                    if cell_child.format.width is None:
+                        continue
+
                     try:
                         cell_width = float(cell_child.format.width[:-1])
                     except TypeError:
