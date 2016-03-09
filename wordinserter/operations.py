@@ -116,7 +116,9 @@ class IgnoredOperation(Operation):
 
 
 class Group(Operation):
-    pass
+    @property
+    def is_root_group(self):
+        return self.parent is None
 
 
 class Bold(Operation):

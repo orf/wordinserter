@@ -1,3 +1,6 @@
+## 0.7.3
+Hopefully improved whitespace handling inside `ListElements`, and improved the logic behind `LineBreak` operations.
+
 ## 0.7.2
 Fixes for table cells with no width, also always ensure a `Format` object is attached to an Operation.
 

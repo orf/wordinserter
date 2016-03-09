@@ -18,12 +18,12 @@ class HTMLParser(BaseParser):
         }
         # Strip whitespace but keep spaces between tags
         self.respect_whitespace = {
-            Bold, Italic, UnderLine, Style, HyperLink, Paragraph
+            Bold, Italic, UnderLine, Style, HyperLink, Paragraph, ListElement
         }
 
         # Ignore all whitespace
         self.ignore_whitespace = {
-            Table, TableRow, NumberedList, BulletList, ListElement
+            Table, TableRow, NumberedList, BulletList, Span
         }
 
         self.mapping = {
@@ -80,16 +80,27 @@ class HTMLParser(BaseParser):
             return None
 
         if isinstance(element, bs4.NavigableString):
-            if element.isspace():
-                if whitespace == "preserve":
-                    return Text(text=str(element))
-                elif whitespace == "ignore":
+            if whitespace == "preserve":
+                return Text(text=str(element))
+
+            elif whitespace == "ignore":
+                if element.isspace():
                     return None
-                elif whitespace == "respect":
+
+                return Text(text=element.strip())
+
+            elif whitespace == "respect":
+                if element.isspace():
                     if isinstance(element.previous_sibling, bs4.NavigableString):
                         return None
                     return Text(text=" ")
-            return Text(text=str(element))
+
+                if element[0].isspace():
+                    element = " " + element.lstrip()
+                if element[-1].isspace():
+                    element = element.rstrip() + " "
+
+                return Text(text=str(element))
 
         cls = self.mapping.get(element.name, IgnoredOperation)
 

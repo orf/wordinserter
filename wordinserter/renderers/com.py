@@ -1,7 +1,7 @@
 from . import BaseRenderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, TableBody, TableHead, Format, \
-    InlineCode, Footnote, Span
+    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, Format, \
+    InlineCode, Footnote, Span, Group
 import warnings
 import requests
 from requests.exceptions import RequestException
@@ -151,7 +151,8 @@ class COMRenderer(BaseRenderer):
 
     @renders(LineBreak)
     def linebreak(self, op: LineBreak):
-        self.selection.TypeParagraph()
+        if isinstance(op.parent, Paragraph) or isinstance(op.parent, Group) and op.parent.is_root_group:
+            self.selection.TypeParagraph()
 
     @renders(Paragraph)
     def paragraph(self, op: Paragraph):
