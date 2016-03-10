@@ -81,7 +81,7 @@ class BaseRenderer(abc.ABC):
                 format_func = self.ignored_element
 
             try:
-                with format_func(operation.format, operation), self.with_hooks(operation):
+                with self.with_hooks(operation), format_func(operation.format, operation):
                     if isinstance(operation, ChildlessOperation):
 
                         if self.debug:

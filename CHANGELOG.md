@@ -1,3 +1,6 @@
+## 0.7.4
+Callbacks are now called **after** the operation has been styled, instead of before.
+
 ## 0.7.3
 Hopefully improved whitespace handling inside `ListElements`, and improved the logic behind `LineBreak` operations.
 
