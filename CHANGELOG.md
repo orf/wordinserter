@@ -1,3 +1,6 @@
+## 0.7.5
+Spellchecking is now disabled (or hidden, I'm not sure) for CodeBlock ranges
+
 ## 0.7.4
 Callbacks are now called **after** the operation has been styled, instead of before.
 
