@@ -1,3 +1,6 @@
+## 0.7.8
+Actually handle ListElements with no children
+
 ## 0.7.7
 Handle ListElements with no children
 
