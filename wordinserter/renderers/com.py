@@ -56,6 +56,8 @@ class WordFormatter(object):
     def style_to_wdcolor(value):
         if value.startswith('rgb('):
             value = WordFormatter.rgbstring_to_hex(value)
+        elif value in webcolors.css3_names_to_hex:
+            value = webcolors.css3_names_to_hex[value]
 
         return WordFormatter.hex_to_wdcolor(value)
 

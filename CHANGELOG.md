@@ -1,3 +1,6 @@
+## 0.7.5
+Added support for CSS named colors, i.e `color: black`.
+
 ## 0.7.4
 Callbacks are now called **after** the operation has been styled, instead of before.
 

@@ -174,7 +174,7 @@ class HTMLParser(BaseParser):
                     else:
                         name = style.name.lower().replace("-", "_")
                         if name in Format.optional:
-                            args[name] = style.value
+                            args[name] = style.value.strip()
 
         instance.format = Format(**args)
 
