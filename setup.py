@@ -13,7 +13,7 @@ else:
 
 setup(
     name='wordinserter',
-    version='0.7.6',
+    version='0.7.7',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',

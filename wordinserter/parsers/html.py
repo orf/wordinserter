@@ -156,6 +156,9 @@ class HTMLParser(BaseParser):
             else:
                 instance.add_child(item)
 
+        if instance.requires_children and not instance.children:
+            return None
+
         args = {}
 
         for attribute, value in element.attrs.items():

@@ -7,6 +7,7 @@ class Operation(object):
     requires = set()
     optional = set()
     allowed_children = set()
+    requires_children = False
 
     def __init__(self, children=None, **kwargs):
         self.parent = None
@@ -243,6 +244,7 @@ class HyperLink(Operation):
 
 class BaseList(Operation):
     allowed_children = {"ListElement"}
+    requires_children = True
     pass
 
 

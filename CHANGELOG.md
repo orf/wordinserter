@@ -1,3 +1,6 @@
+## 0.7.7
+Handle ListElements with no children
+
 ## 0.7.6
 Apparently there is already a 0.7.5 release. Not sure how that happened.
 
