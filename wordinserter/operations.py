@@ -257,6 +257,7 @@ class NumberedList(BaseList):
 
 
 class ListElement(Operation):
+    requires_children = True
     pass
 
 
