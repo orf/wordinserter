@@ -467,9 +467,13 @@ class COMRenderer(BaseRenderer):
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
 
         if op.background_color:
-            bg_color = WordFormatter.style_to_highlight_wdcolor(op.background_color, self.constants)
-            if bg_color:
-                element_range.HighlightColorIndex = bg_color
+            if isinstance(parent_operation, TableCell):
+                bg_color = WordFormatter.style_to_wdcolor(op.background_color)
+                parent_operation.render.cell_object.Shading.BackgroundPatternColor = bg_color
+            else:
+                bg_color = WordFormatter.style_to_highlight_wdcolor(op.background_color, self.constants)
+                if bg_color:
+                    element_range.HighlightColorIndex = bg_color
 
         if op.vertical_align:
             if isinstance(parent_operation, TableCell):

@@ -1,3 +1,6 @@
+## 0.7.9
+Add support for table cells with background colors.
+
 ## 0.7.8
 Actually handle ListElements with no children
 
