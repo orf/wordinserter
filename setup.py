@@ -4,16 +4,14 @@ import warnings
 
 requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors', 'pygments']
 
-if platform.system() == "Windows":
-    requires.append("pypiwin32")
-else:
+if platform.system() != "Windows":
     warnings.warn("wordinserter currently only supports Windows for generating documents,"
                   " functionality will be impaired.")
 
 
 setup(
     name='wordinserter',
-    version='0.7.9',
+    version='0.8',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',
