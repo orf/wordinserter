@@ -138,11 +138,16 @@ class Text(ChildlessOperation):
     requires = {"text"}
 
     def __repr__(self):
+        return "<Text '{0}' />".format(self.short_text)
+    
+    @property
+    def short_text(self):
         if len(self.text) > 10:
             txt = self.text[:10] + "..."
         else:
             txt = self.text
-        return "<Text '{0}' />".format(txt)
+
+        return txt
 
     def strip_whitespace(self):
         return Text(text=self.text.strip())

@@ -1,6 +1,6 @@
 import abc
 import inspect
-from wordinserter.operations import ChildlessOperation, IgnoredOperation, Group
+from wordinserter.operations import ChildlessOperation, IgnoredOperation, Group, Text
 from wordinserter.exceptions import InsertError
 import contextlib
 from collections.abc import Iterable
@@ -74,8 +74,8 @@ class BaseRenderer(abc.ABC):
                     "Operation {0} not supported by this renderer".format(operation.__class__.__name__))
 
             if operation.format is not None \
-                and operation.format.has_format() \
-                and operation.format.__class__ in self.render_methods:
+                    and operation.format.has_format() \
+                    and operation.format.__class__ in self.render_methods:
                 format_func = self.render_methods[operation.format.__class__]
             else:
                 format_func = self.ignored_element
@@ -85,7 +85,10 @@ class BaseRenderer(abc.ABC):
                     if isinstance(operation, ChildlessOperation):
 
                         if self.debug:
-                            print((" " * indent) + operation.__class__.__name__)
+                            output = operation.__class__.__name__ \
+                                if not isinstance(operation, Text) else operation.short_text
+
+                            print((" " * indent) + output)
 
                         method(operation, *args or [])
 
