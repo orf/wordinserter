@@ -1,3 +1,9 @@
+## 0.8.1 (WIP)
+Remove hard-coded lxml parser in BeautifulSoup
+
+## 0.8.0
+Remove pywin32 dependency
+
 ## 0.7.9
 Add support for table cells with background colors.
 
