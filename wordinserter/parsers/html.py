@@ -73,7 +73,32 @@ class HTMLParser(BaseParser):
                 continue
 
             tokens.append(item)
+
+        self.normalize_list_elements(tokens)
         return tokens
+
+    def normalize_list_elements(self, tokens):
+        for token in tokens:
+            if isinstance(token, BaseList):
+                self.normalize_list(token)
+            else:
+                self.normalize_list_elements(token.children)
+
+    def normalize_list(self, op: BaseList):
+        # If there are > 1 lists to move out then we need to insert it after previously moved ones,
+        # instead of before. `moved` tracks this.
+        children, moved = list(op), 0
+
+        for child in children:
+            if isinstance(child, ListElement):
+                for element_child in child:
+                    if isinstance(element_child, BaseList):
+                        moved += 1
+                        # Move the list outside of the ListElement
+                        child_index = op.child_index(child)
+                        op.insert_child(child_index + moved, element_child)
+                        child.remove_child(element_child)
+                        self.normalize_list(element_child)
 
     def build_element(self, element, whitespace="ignore"):
         if isinstance(element, bs4.Comment):
@@ -146,10 +171,6 @@ class HTMLParser(BaseParser):
             if isinstance(item, Text) and not whitespace == 'preserve':
                 if len(children) != 1:
                     item = item.keep_some_whitespace()
-
-            if isinstance(instance, BaseList) and not isinstance(item, ListElement):
-                # Wrap the item in a ListElement
-                item = ListElement(children=[item])
 
             if isinstance(item, IgnoredOperation):
                 instance.add_children(item.children)

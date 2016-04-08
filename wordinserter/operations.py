@@ -35,16 +35,32 @@ class Operation(object):
     def set_source(self, source):
         self.source = source
 
+    def _check_child_allowed(self, child):
+        allowed = not (self.allowed_children and child.__class__.__name__ not in self.allowed_children)
+
+        if not allowed:
+            raise RuntimeError("Child {0} is not allowed in parent {1}".format(child.__class__.__name__,
+                                                                               self.__class__.__name__))
+
     def add_child(self, child):
-        if self.allowed_children and child.__class__.__name__ not in self.allowed_children:
-            raise RuntimeError("Child {0} is not allowed".format(child.__class__.__name__))
+        self._check_child_allowed(child)
         self.children.append(child)
 
     def add_children(self, children):
         for child in children:
             self.add_child(child)
 
+    def insert_child(self, index, child):
+        self._check_child_allowed(child)
+
+        self.children.insert(index, child)
+
+    def remove_child(self, child):
+        self.children.remove(child)
+
     def replace_child(self, child, new_child):
+        self._check_child_allowed(new_child)
+
         self.children[self.child_index(child)] = new_child
 
     def has_child(self, child_class):
@@ -72,6 +88,20 @@ class Operation(object):
     @property
     def has_children(self):
         return len(self.children) > 0
+
+    @property
+    def ancestors(self):
+        parent = self.parent
+
+        while parent:
+            yield parent
+            parent = parent.parent
+            
+    @property
+    def descendants(self):
+        for child in self.children:
+            yield child
+            yield from child.descendants
 
     def __repr__(self):
         if len(self.children) == 1:
@@ -147,7 +177,7 @@ class Text(ChildlessOperation):
         else:
             txt = self.text
 
-        return txt
+        return repr(txt)
 
     def strip_whitespace(self):
         return Text(text=self.text.strip())
@@ -181,17 +211,20 @@ class CodeBlock(Operation):
         from pygments.lexers import get_lexer_by_name
         from pygments.util import ClassNotFound
         from pygments import highlight
-        from pygments.formatters import HtmlFormatter
+        from pygments.formatters import get_formatter_by_name
         from wordinserter import parse
         import warnings
 
         try:
+            formatter = get_formatter_by_name("html")
             lexer = get_lexer_by_name(self.highlight)
         except ClassNotFound:
-            warnings.warn("Lexer {0} not found, not highlighting".format(self.highlight))
+            warnings.warn("Lexer {0} or formatter html not found, not highlighting".format(self.highlight))
             return None
 
-        highlighted_code = highlight(self.text, lexer=lexer, formatter=HtmlFormatter(noclasses=True))
+        formatter.noclasses = True
+
+        highlighted_code = highlight(self.text, lexer=lexer, formatter=formatter)
         return parse(highlighted_code, parser="html")
 
 
@@ -248,13 +281,16 @@ class HyperLink(Operation):
 
 
 class BaseList(Operation):
-    allowed_children = {"ListElement"}
+    allowed_children = {"ListElement", "BulletList", "NumberedList"}
     requires_children = True
-    pass
+    
+    @property
+    def depth(self):
+        return sum(1 for p in self.ancestors if isinstance(p, BaseList))
 
 
 class BulletList(BaseList):
-    pass
+    optional = {"type"}
 
 
 class NumberedList(BaseList):

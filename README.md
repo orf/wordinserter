@@ -68,4 +68,33 @@ versions may produce different results.
 
 ## Supported Operations
 WordInserter currently supports a range of different operations, including code blocks, font size/colors, images, 
-hyperlinks, numbered and bullet lists (
+hyperlinks, numbered and bullet lists.
+
+#### Why aren't my lists showing up properly?
+There are two ways people write lists in HTML, one with each sub-list as a child of the parent list, or as a child of a
+list element. Below is a sample of the two different ways, both of which display correctly in all browsers:
+
+```
+<ol>
+    <li>
+        I'm a list element
+    </li>
+    <ul>
+        <li>I'm a sub list!</li>
+    </ul>
+</ol>
+```
+```
+<ol>
+    <li>
+        I'm a list element
+        <ul>
+            <li>I'm a sub list!</li>
+        </ul>
+    </li>
+</ol>
+```
+
+The second way is correct according to the HTML specification. `lxml` parses the first structure incorrectly in some cases,
+which leads to weird list behavior. There isn't much this library can do about that, so make sure your lists are
+in the second format.

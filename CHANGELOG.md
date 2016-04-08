@@ -1,5 +1,6 @@
 ## 0.8.1 (WIP)
-Remove hard-coded lxml parser in BeautifulSoup
+Remove hard-coded lxml parser in BeautifulSoup. Refactored the lists implementation to not suck and actually
+function. We now support roman numerals, complex nested lists and other funky stuff.
 
 ## 0.8.0
 Remove pywin32 dependency

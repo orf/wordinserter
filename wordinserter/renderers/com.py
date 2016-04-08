@@ -261,28 +261,45 @@ class COMRenderer(BaseRenderer):
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
         self.selection.Style = style
 
+    def _get_constants_for_list(self, op: BaseList):
+        if isinstance(op, NumberedList):
+            gallery_type, list_type = self.constants.wdNumberGallery, self.constants.wdListSimpleNumbering
+        elif isinstance(op, BulletList):
+            gallery_type, list_type = self.constants.wdBulletGallery, self.constants.wdListBullet
+        else:
+            raise RuntimeError("Unknown list type {0}".format(op.__class__.__name__))
+
+        return gallery_type, list_type
+
     @renders(BulletList, NumberedList)
     def render_list(self, op):
-        first_list = self.selection.Range.ListFormat.ListTemplate is None
-        gallery_type = self.constants.wdNumberGallery \
-            if isinstance(op, NumberedList) else self.constants.wdBulletGallery
+        depth = op.depth
+        first_list = depth == 0
+
+        gallery_type, list_type = self._get_constants_for_list(op)
 
         if first_list:
-            self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
+            self.selection.Range.ListFormat.ApplyListTemplate(
                 ListTemplate=self.word.ListGalleries(gallery_type).ListTemplates(1),
-                ContinuePreviousList=False,
+                ContinuePreviousList=True,
+                ApplyTo=self.constants.wdListApplyToWholeList,
                 DefaultListBehavior=self.constants.wdWord10ListBehavior
             )
         else:
-            if op.previous_sibling is not None:
-                self.selection.TypeParagraph()
+            if self.selection.Range.ListFormat.ListType != list_type:
+                self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
 
-            self.selection.Range.ListFormat.ListIndent()
-
-            if self.selection.Range.ListFormat.ListTemplate != gallery_type:
                 self.selection.Range.ListFormat.ApplyListTemplate(
-                    ListTemplate=self.word.ListGalleries(gallery_type).ListTemplates(1)
+                    ListTemplate=self.word.ListGalleries(gallery_type).ListTemplates(1),
+                    ContinuePreviousList=True,
+                    ApplyTo=self.constants.wdListApplyToThisPointForward,
+                    DefaultListBehavior=self.constants.wdWord10ListBehavior
                 )
+
+                for i in range(depth):
+                    self.selection.Range.ListFormat.ListIndent()
+            else:
+                self.selection.Range.ListFormat.ListIndent()
 
         yield
 
@@ -290,13 +307,22 @@ class COMRenderer(BaseRenderer):
             self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
             # self.selection.TypeParagraph()
         else:
+            parent_gallery_type, parent_list_type = self._get_constants_for_list(op.parent)
+            if self.selection.Range.ListFormat.ListType != parent_list_type:
+                self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
+                    ListTemplate=self.word.ListGalleries(parent_gallery_type).ListTemplates(1),
+                    ContinuePreviousList=True,
+                    ApplyTo=self.constants.wdListApplyToThisPointForward,
+                    DefaultListBehavior=self.constants.wdWord10ListBehavior,
+                    ApplyLevel=depth
+                )
+
             self.selection.Range.ListFormat.ListOutdent()
 
     @renders(ListElement)
     def list_element(self, op: ListElement):
         yield
-        if not isinstance(op[-1], BaseList):
-            self.selection.TypeParagraph()
+        self.selection.TypeParagraph()
 
     @renders(Table)
     def table(self, op: Table):
