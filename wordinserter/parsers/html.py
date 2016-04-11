@@ -62,7 +62,7 @@ class HTMLParser(BaseParser):
         }
 
     def parse(self, content):
-        parser = bs4.BeautifulSoup(content)
+        parser = bs4.BeautifulSoup(content, "lxml")
 
         tokens = []
 
@@ -87,10 +87,11 @@ class HTMLParser(BaseParser):
     def normalize_list(self, op: BaseList):
         # If there are > 1 lists to move out then we need to insert it after previously moved ones,
         # instead of before. `moved` tracks this.
-        children, moved = list(op), 0
+        children = list(op)
 
         for child in children:
             if isinstance(child, ListElement):
+                moved = 0
                 for element_child in child:
                     if isinstance(element_child, BaseList):
                         moved += 1
@@ -150,6 +151,14 @@ class HTMLParser(BaseParser):
             highlight = element.attrs.get("highlight")
             text = element.getText()
             cls = partial(CodeBlock, highlight=highlight, text=text)
+        elif cls is NumberedList:
+            type = element.attrs.get("type")
+            values = {
+                "i": "roman-lowercase",
+                "I": "roman-uppercase",
+
+            }
+            cls = partial(NumberedList, type=values.get(type))
 
         instance = cls(attributes=element.attrs)
         cls = instance.__class__

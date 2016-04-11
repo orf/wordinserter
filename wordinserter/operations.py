@@ -288,13 +288,17 @@ class BaseList(Operation):
     def depth(self):
         return sum(1 for p in self.ancestors if isinstance(p, BaseList))
 
+    @property
+    def sub_lists(self):
+        return sum(1 for p in self.children if isinstance(p, BaseList))
+
 
 class BulletList(BaseList):
-    optional = {"type"}
+    optional = {"type"}  # Does nothing on BulletList, just here to match NumberedList
 
 
 class NumberedList(BaseList):
-    pass
+    optional = {"type"}
 
 
 class ListElement(Operation):

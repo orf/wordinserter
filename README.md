@@ -98,3 +98,15 @@ list element. Below is a sample of the two different ways, both of which display
 The second way is correct according to the HTML specification. `lxml` parses the first structure incorrectly in some cases,
 which leads to weird list behavior. There isn't much this library can do about that, so make sure your lists are
 in the second format.
+
+One other thing to note: Word does not support lists with mixed list-types on a single level. i.e this HTML will render
+incorrectly:
+
+```
+<ol>
+    <li>
+        <ul><li>Unordered List On Level #1</li></ul>
+        <ol><li>Ordered List On Level #1</li></ul>
+    </li>
+</ol>
+```

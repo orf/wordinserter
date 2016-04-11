@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import platform
 import warnings
 
-requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors', 'pygments']
+requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors', 'pygments', 'lxml']
 
 if platform.system() != "Windows":
     warnings.warn("wordinserter currently only supports Windows for generating documents,"

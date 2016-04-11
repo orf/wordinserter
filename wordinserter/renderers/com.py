@@ -263,60 +263,63 @@ class COMRenderer(BaseRenderer):
 
     def _get_constants_for_list(self, op: BaseList):
         if isinstance(op, NumberedList):
-            gallery_type, list_type = self.constants.wdNumberGallery, self.constants.wdListSimpleNumbering
+            gallery_type, list_types = self.constants.wdNumberGallery, self.constants.wdListSimpleNumbering
         elif isinstance(op, BulletList):
-            gallery_type, list_type = self.constants.wdBulletGallery, self.constants.wdListBullet
+            gallery_type, list_types = self.constants.wdBulletGallery, self.constants.wdListBullet
         else:
             raise RuntimeError("Unknown list type {0}".format(op.__class__.__name__))
 
-        return gallery_type, list_type
+        return gallery_type, list_types
 
     @renders(BulletList, NumberedList)
     def render_list(self, op):
-        depth = op.depth
-        first_list = depth == 0
+        list_level = op.depth + 1
+        first_list = list_level == 1
 
-        gallery_type, list_type = self._get_constants_for_list(op)
+        gallery_type, list_types = self._get_constants_for_list(op)
+        gallery = self.word.ListGalleries(gallery_type)
+
+        if op.type:
+            style_values = {
+                'roman-lowercase': self.constants.wdListNumberStyleLowercaseRoman,
+                'roman-uppercase': self.constants.wdListNumberStyleUppercaseRoman
+            }
+            if op.type in style_values:
+                value = style_values[op.type]
+                for list_template in gallery.ListTemplates:
+                    if list_template.ListLevels(1).NumberStyle == value:
+                        template = list_template
+                        break
+                else:
+                    warnings.warn('Unable to locate list style for {0}, using default'.format(op.type))
+                    template = gallery.ListTemplates(1)
+        else:
+            template = gallery.ListTemplates(1)
 
         if first_list:
-            self.selection.Range.ListFormat.ApplyListTemplate(
-                ListTemplate=self.word.ListGalleries(gallery_type).ListTemplates(1),
-                ContinuePreviousList=True,
-                ApplyTo=self.constants.wdListApplyToWholeList,
+            self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
+                ListTemplate=template,
+                ContinuePreviousList=False,
                 DefaultListBehavior=self.constants.wdWord10ListBehavior
             )
         else:
-            if self.selection.Range.ListFormat.ListType != list_type:
-                self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
-
-                self.selection.Range.ListFormat.ApplyListTemplate(
-                    ListTemplate=self.word.ListGalleries(gallery_type).ListTemplates(1),
-                    ContinuePreviousList=True,
-                    ApplyTo=self.constants.wdListApplyToThisPointForward,
-                    DefaultListBehavior=self.constants.wdWord10ListBehavior
-                )
-
-                for i in range(depth):
-                    self.selection.Range.ListFormat.ListIndent()
-            else:
-                self.selection.Range.ListFormat.ListIndent()
+            self.selection.Range.ListFormat.ListIndent()
 
         yield
 
+        if self.selection.Range.ListFormat.ListType != list_types:
+
+            self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
+                ListTemplate=template,
+                ContinuePreviousList=True,
+                DefaultListBehavior=self.constants.wdWord10ListBehavior,
+                ApplyLevel=list_level,
+                ApplyTo=self.constants.wdListApplyToWholeList
+            )
+
         if first_list:
             self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
-            # self.selection.TypeParagraph()
         else:
-            parent_gallery_type, parent_list_type = self._get_constants_for_list(op.parent)
-            if self.selection.Range.ListFormat.ListType != parent_list_type:
-                self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
-                    ListTemplate=self.word.ListGalleries(parent_gallery_type).ListTemplates(1),
-                    ContinuePreviousList=True,
-                    ApplyTo=self.constants.wdListApplyToThisPointForward,
-                    DefaultListBehavior=self.constants.wdWord10ListBehavior,
-                    ApplyLevel=depth
-                )
-
             self.selection.Range.ListFormat.ListOutdent()
 
     @renders(ListElement)
