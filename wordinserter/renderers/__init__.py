@@ -88,7 +88,9 @@ class BaseRenderer(abc.ABC):
                             output = operation.__class__.__name__ \
                                 if not isinstance(operation, Text) else operation.short_text
 
-                            print((" " * indent) + output)
+                            output = output.encode(errors="replace")
+
+                            print((" " * indent) + str(output))
 
                         method(operation, *args or [])
 

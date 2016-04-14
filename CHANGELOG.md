@@ -1,3 +1,6 @@
+## 0.8.3
+Fix an encoding error on Windows Server. Why windows, why. :(
+
 ## 0.8.2
 Fixed an error when an unknown language is given inside a code block.
 
