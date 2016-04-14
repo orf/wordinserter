@@ -33,6 +33,7 @@ class HTMLParser(BaseParser):
             "i": Italic,
             "em": Italic,
             "u": UnderLine,
+            "code": CodeBlock,
             "pre": CodeBlock,
             "div": Group,
             "span": Span,

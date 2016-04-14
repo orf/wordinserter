@@ -201,8 +201,10 @@ class COMRenderer(BaseRenderer):
         self.selection.Style = self.document.Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
 
-        if op.highlight:
-            yield self.new_operations(op.highlighted_operations())
+        new_operations = op.highlighted_operations() if op.highlight else None
+
+        if new_operations:
+            yield self.new_operations(new_operations)
         else:
             yield
 
