@@ -1,3 +1,7 @@
+## 0.8.4
+Add an attribute `break_across_pages` to the Table operation. Add this to make your tables break
+across pages, hopefully.
+
 ## 0.8.3
 Fix an encoding error on Windows Server. Why windows, why. :(
 

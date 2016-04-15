@@ -361,6 +361,10 @@ class COMRenderer(BaseRenderer):
             list(row.Cells) for row in table.Rows
             ]
 
+        if op.break_across_pages:
+            for row in table.Rows:
+                row.AllowBreakAcrossPages = -1
+
         processed_cells = set()
 
         # Handling merged cells is a bitch. We do it by finding the max dimensions of the table (the max sum of all

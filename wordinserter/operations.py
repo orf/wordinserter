@@ -308,7 +308,7 @@ class ListElement(Operation):
 
 class Table(Operation):
     allowed_children = {"TableRow", "TableHead", "TableBody"}
-    optional = {"border"}
+    optional = {"border", "break_across_pages"}
 
     @property
     def dimensions(self):
