@@ -1,3 +1,7 @@
+## 0.8.5
+Remove `break_across_pages`. Word is horrible, you need to make the application Visible=True for
+this to work. This should be handled by your app code not this library.
+
 ## 0.8.4
 Add an attribute `break_across_pages` to the Table operation. Add this to make your tables break
 across pages, hopefully.

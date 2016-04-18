@@ -11,7 +11,7 @@ if platform.system() != "Windows":
 
 setup(
     name='wordinserter',
-    version='0.8.4',
+    version='0.8.5',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',

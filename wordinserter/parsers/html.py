@@ -147,8 +147,7 @@ class HTMLParser(BaseParser):
                           colspan=int(element.attrs.get("colspan", 1)),
                           rowspan=int(element.attrs.get("rowspan", 1)))
         elif cls is Table:
-            cls = partial(Table, border=element.attrs.get("border", "1"),
-                          break_across_pages=element.attrs.get("break_across_pages", False) == 'true')
+            cls = partial(Table, border=element.attrs.get("border", "1"))
         elif cls is CodeBlock:
             highlight = element.attrs.get("highlight")
             text = element.getText()
