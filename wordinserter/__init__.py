@@ -14,7 +14,7 @@ renderers = {
 }
 
 
-def parse(text, parser=None):
+def parse(text, parser=None, **kwargs):
     """
     Parse some given input into a list of operations to perform
     :param text: Text input
@@ -30,7 +30,7 @@ def parse(text, parser=None):
 
     parser = parser()
 
-    return parser.parse(text)
+    return parser.parse(text, **kwargs)
 
 
 def insert(operations, renderer="com", **kwargs):

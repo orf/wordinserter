@@ -62,8 +62,25 @@ class HTMLParser(BaseParser):
             "br": LineBreak
         }
 
-    def parse(self, content):
+    def parse(self, content, stylesheets=None):
         parser = bs4.BeautifulSoup(content, "lxml")
+
+        if stylesheets:
+            # Iterate through each stylesheet, and each rule within each sheet, and apply the relevant styles as
+            # inline-styles.
+            docs = (cssutils.parseString(css_content) for css_content in stylesheets if css_content)
+            for doc in docs:
+                for rule in (rule for rule in doc.cssRules if rule.typeString == 'STYLE_RULE'):
+                    rule_styles = dict(rule.style)
+                    for selector in rule.selectorList:
+                        elements = parser.select(selector.selectorText)
+                        for element in elements:
+                            style = cssutils.parseStyle(element.attrs.get("style", ""))
+                            element_style = dict(style)
+                            element_style.update(rule_styles)
+                            for key, value in element_style.items():
+                                style[key] = value
+                            element.attrs["style"] = style.getCssText(" ")
 
         tokens = []
 

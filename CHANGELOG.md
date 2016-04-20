@@ -1,3 +1,7 @@
+## 0.8.7
+Added support for CSS files! WHERE IS YOUR GOD NOW? You can pass a `stylesheets` array to `parse()` with some css
+definitions and it will do the right thing.
+
 ## 0.8.6
 Added support for images with data URIs. Passing an image with a src set to "data:mimetype,base64;DATA..." will work
 as expected, by extracting the image from the data URI and saving it, before inserting.

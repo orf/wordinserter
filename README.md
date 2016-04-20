@@ -70,6 +70,28 @@ versions may produce different results.
 WordInserter currently supports a range of different operations, including code blocks, font size/colors, images, 
 hyperlinks, numbered and bullet lists.
 
+#### Stylesheets?
+Wordinserter has support for stylesheets! Every element can be styled with inline styles (`style='whatever'`) but this
+gets tedious at scale. You can pass CSS stylesheets to the `parse` function:
+
+```
+html = "<p class="mystyle">Hello Word</p>"
+stylesheet = """
+.mystyle {
+    color: red;
+}
+"""
+
+operations = parse(html, parser="html", stylesheets=[stylesheet])
+insert(operations, document=document, constants=constants)
+
+```
+
+This will render "Hello Word" in red. There is one major caveat: Rules are applied top to bottom, unlike in a browser
+where parent CSS properties are hidden/overridden by the children. The **opposite** happens here, if a child's CSS
+property overrides a parents then it's the **parents** that will be applied, not the child's. This will hopefully be
+improved in the future.
+
 #### Why aren't my lists showing up properly?
 There are two ways people write lists in HTML, one with each sub-list as a child of the parent list, or as a child of a
 list element. Below is a sample of the two different ways, both of which display correctly in all browsers:
