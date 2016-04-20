@@ -1,3 +1,7 @@
+## 0.8.6
+Added support for images with data URIs. Passing an image with a src set to "data:mimetype,base64;DATA..." will work
+as expected, by extracting the image from the data URI and saving it, before inserting.
+
 ## 0.8.5
 Remove `break_across_pages`. Word is horrible, you need to make the application Visible=True for
 this to work. This should be handled by your app code not this library.

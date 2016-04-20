@@ -1,3 +1,10 @@
+import codecs
+import warnings
+
+import requests
+import tempfile
+from urllib.parse import urlsplit
+
 
 class RenderData(object):
     pass
@@ -273,6 +280,44 @@ class Font(Operation):
 class Image(ChildlessOperation):
     requires = {"location"}
     optional = {"height", "width", "caption"}
+
+    @staticmethod
+    def write_to_temp_file(data):
+        with tempfile.NamedTemporaryFile(delete=False) as temp:
+            temp.write(data)
+
+        return temp.name
+
+    def get_image_path(self):
+        if hasattr(self, "_path_cache"):
+            return self._path_cache
+
+        result = self.location
+        split = urlsplit(result)
+
+        if split.scheme in {"http", "https"}:
+            try:
+                response = requests.get(result, verify=False, timeout=5)
+            except requests.RequestException as e:
+                warnings.warn('Unable to prefetch image {url}: {ex}'.format(url=result, ex=e))
+            else:
+                result = self.write_to_temp_file(response.content)
+
+        elif split.scheme == 'data':
+            mimetype, rest = split.path.split(";")
+            encoding, data = rest.split(",")
+
+            if not mimetype.startswith("image/"):
+                raise RuntimeError("Mimetype {0} is not an image type!".format(mimetype))
+
+            if not encoding == "base64":
+                raise RuntimeError("Unknown data encoding {0}".format(encoding))
+
+            image_content = codecs.decode(bytes(data, "utf8"), "base64")
+            result = self.write_to_temp_file(image_content)
+
+        self._path_cache = result
+        return result
 
 
 class HyperLink(Operation):

@@ -216,38 +216,29 @@ class COMRenderer(BaseRenderer):
     @renders(Image)
     def image(self, op: Image):
 
-        location = op.location
+        location = op.get_image_path()
 
-        try:
-            response = requests.get(location, verify=False, timeout=5)
-        except RequestException as e:
-            warnings.warn('Unable to load image {url}: {ex}'.format(url=location, ex=e))
-
+        if isinstance(op.parent, TableCell):
+            # Inserting an image inside a TableCell causes some issues if you use self.selection. It inserts it
+            # to the leftmost cell for no reason :/
+            rng = op.parent.render.cell_object.Range
         else:
-            with tempfile.NamedTemporaryFile(delete=False) as temp:
-                temp.write(response.content)
+            rng = self.selection
 
-            location = temp.name
+        image = rng.InlineShapes.AddPicture(FileName=location, SaveWithDocument=True)
 
-            if isinstance(op.parent, TableCell):
-                rng = op.parent.render.cell_object.Range
-            else:
-                rng = self.selection
+        if op.height:
+            image.Height = op.height * 0.75
 
-            image = rng.InlineShapes.AddPicture(FileName=location)
+        if op.width:
+            image.Width = op.width * 0.75
 
-            if op.height:
-                image.Height = op.height * 0.75
-
-            if op.width:
-                image.Width = op.width * 0.75
-
-            if op.caption:
-                self.selection.TypeParagraph()
-                self.selection.Range.Style = self.document.Styles("caption")
-                self.selection.TypeText(op.caption)
-
+        if op.caption:
             self.selection.TypeParagraph()
+            self.selection.Range.Style = self.document.Styles("caption")
+            self.selection.TypeText(op.caption)
+
+        self.selection.TypeParagraph()
 
     @renders(HyperLink)
     def hyperlink(self, op: HyperLink):
