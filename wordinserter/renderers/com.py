@@ -208,10 +208,10 @@ class COMRenderer(BaseRenderer):
         else:
             yield
 
-        self.selection.ParagraphFormat.LineSpacingRule = previous_linespace
         self.selection.TypeParagraph()
-        self.selection.Style = previous_style
         self.selection.Font.Name = previous_font_name
+        self.selection.Style = previous_style
+        self.selection.ParagraphFormat.LineSpacingRule = previous_linespace
 
     @renders(Image)
     def image(self, op: Image):

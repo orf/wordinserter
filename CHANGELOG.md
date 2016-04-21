@@ -1,3 +1,6 @@
+## WIP
+Fix line spacing after CodeBlocks
+
 ## 0.8.7
 Added support for CSS files! WHERE IS YOUR GOD NOW? You can pass a `stylesheets` array to `parse()` with some css
 definitions and it will do the right thing.
