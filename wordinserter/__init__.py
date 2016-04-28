@@ -2,6 +2,7 @@
 from .parsers import HTMLParser, MarkdownParser, BaseParser
 from .renderers import COMRenderer, BaseRenderer
 from .exceptions import InsertError
+from .utils import CombinedConstants
 import inspect
 
 parsers = {

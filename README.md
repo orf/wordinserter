@@ -74,7 +74,7 @@ hyperlinks, numbered and bullet lists.
 Wordinserter has support for stylesheets! Every element can be styled with inline styles (`style='whatever'`) but this
 gets tedious at scale. You can pass CSS stylesheets to the `parse` function:
 
-```
+```python
 html = "<p class="mystyle">Hello Word</p>"
 stylesheet = """
 .mystyle {
@@ -96,7 +96,7 @@ improved in the future.
 There are two ways people write lists in HTML, one with each sub-list as a child of the parent list, or as a child of a
 list element. Below is a sample of the two different ways, both of which display correctly in all browsers:
 
-```
+```html
 <ol>
     <li>
         I'm a list element
@@ -106,7 +106,7 @@ list element. Below is a sample of the two different ways, both of which display
     </ul>
 </ol>
 ```
-```
+```html
 <ol>
     <li>
         I'm a list element
@@ -124,7 +124,7 @@ in the second format.
 One other thing to note: Word does not support lists with mixed list-types on a single level. i.e this HTML will render
 incorrectly:
 
-```
+```html
 <ol>
     <li>
         <ul><li>Unordered List On Level #1</li></ul>

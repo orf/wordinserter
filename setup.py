@@ -11,7 +11,7 @@ if platform.system() != "Windows":
 
 setup(
     name='wordinserter',
-    version='0.8.7',
+    version='0.8.8',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',
@@ -19,9 +19,9 @@ setup(
     author_email='tom@tomforb.es',
     description='Render HTML and Markdown to a specific portion of a word document',
     install_requires=requires,
-    include_package_data=True,
     long_description="""\
 Render HTML and Markdown into a word document using win32com.
 Check out the github repo for more information and code samples.
-"""
+""",
+    package_data={'wordinserter': ['images/*']}
 )

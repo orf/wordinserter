@@ -254,12 +254,15 @@ class Format(Operation):
         "color",
         "background_color",
         "text_decoration",
-        "margins",
+        "margin",
         "vertical_align",
         "text_align",
         "width",
-        "height"
+        "height",
+        "border"
     }
+
+    NESTED_STYLES = {"border", "margin"}
 
     def has_format(self):
         return any(getattr(self, name) for name in self.optional)
@@ -288,6 +291,11 @@ class Image(ChildlessOperation):
 
         return temp.name
 
+    def get_404_image(self):
+        import pkg_resources
+        not_found_image = pkg_resources.resource_string(__name__, "images/404.png")
+        return self.write_to_temp_file(not_found_image)
+
     def get_image_path(self):
         if hasattr(self, "_path_cache"):
             return self._path_cache
@@ -300,6 +308,7 @@ class Image(ChildlessOperation):
                 response = requests.get(result, verify=False, timeout=5)
             except requests.RequestException as e:
                 warnings.warn('Unable to prefetch image {url}: {ex}'.format(url=result, ex=e))
+                result = self.get_404_image()
             else:
                 result = self.write_to_temp_file(response.content)
 

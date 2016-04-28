@@ -62,7 +62,7 @@ class WordFormatter(object):
         return WordFormatter.hex_to_wdcolor(value)
 
     @staticmethod
-    def font_size_to_points(css_value):
+    def size_to_points(css_value):
         """
         Transform a pixel string into points (used by word).
 
@@ -237,6 +237,8 @@ class COMRenderer(BaseRenderer):
             self.selection.TypeParagraph()
             self.selection.Range.Style = self.document.Styles("caption")
             self.selection.TypeText(op.caption)
+
+        op.render.image = image
 
         self.selection.TypeParagraph()
 
@@ -469,7 +471,7 @@ class COMRenderer(BaseRenderer):
                 warnings.warn("Unable to apply style name '{0}'".format(op.style))
 
         if op.font_size:
-            size = WordFormatter.font_size_to_points(op.font_size)
+            size = WordFormatter.size_to_points(op.font_size)
             if size:
                 element_range.Font.Size = size
 
@@ -482,8 +484,8 @@ class COMRenderer(BaseRenderer):
             element_range.Font.UnderlineColor = self.constants.wdColorAutomatic
             element_range.Font.Underline = self.constants.wdUnderlineSingle
 
-        if op.margins:
-            if op.margins["left"] == "auto" and op.margins["right"] == "auto":
+        if op.margin:
+            if op.margin["left"] == "auto" and op.margin["right"] == "auto":
                 if not isinstance(parent_operation, Table):
                     # We don't want to center a table.
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
@@ -516,5 +518,25 @@ class COMRenderer(BaseRenderer):
                 }
                 if op.text_align in alignment:
                     parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.text_align]
+
+        if op.border:
+            if isinstance(parent_operation, Image):
+                img = parent_operation.render.image
+                img.Line.Visible = True
+
+                if op.border["style"]:
+                    style = op.border["style"]
+                    constants = {
+                        "solid": self.constants.msoLineSolid,
+                    }
+
+                    if style in constants:
+                        img.Line.DashStyle = constants[style]
+
+                if op.border["width"]:
+                    img.Line.Weight = WordFormatter.size_to_points(op.border["width"])
+
+                if op.border["color"]:
+                    img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
 
         self.selection.TypeBackspace()

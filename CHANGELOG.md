@@ -1,5 +1,6 @@
-## WIP
-Fix line spacing after CodeBlocks
+## 0.8.8
+Fix line spacing after CodeBlocks. Added support for border styles in images, and for multiple constants (use the
+`CombinedConstants` class)
 
 ## 0.8.7
 Added support for CSS files! WHERE IS YOUR GOD NOW? You can pass a `stylesheets` array to `parse()` with some css

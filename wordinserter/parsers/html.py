@@ -217,11 +217,16 @@ class HTMLParser(BaseParser):
                     args["style"] = vals[0]
             elif attribute == "style":
                 styles = cssutils.parseStyle(value)
-                args["margins"] = defaultdict(str)
+
+                for name in Format.NESTED_STYLES:
+                    args[name] = defaultdict(str)
 
                 for style in styles:
-                    if style.name.startswith("margin-"):
-                        args["margins"][style.name.replace("margin-", "")] = style.value
+                    for nested_name in Format.NESTED_STYLES:
+                        nested_name_with_dash = nested_name + "-"
+                        if style.name.startswith(nested_name_with_dash):
+                            args[nested_name][style.name.replace(nested_name_with_dash, "")] = style.value
+                            break
                     else:
                         name = style.name.lower().replace("-", "_")
                         if name in Format.optional:
