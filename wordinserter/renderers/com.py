@@ -203,10 +203,16 @@ class COMRenderer(BaseRenderer):
 
         new_operations = op.highlighted_operations() if op.highlight else None
 
+        start = self.selection.Start
+
         if new_operations:
             yield self.new_operations(new_operations)
         else:
             yield
+
+        end = self.selection.End
+        rng = self.range(start, end)
+        rng.NoProofing = True
 
         self.selection.TypeParagraph()
         self.selection.Font.Name = previous_font_name
@@ -303,7 +309,6 @@ class COMRenderer(BaseRenderer):
         yield
 
         if self.selection.Range.ListFormat.ListType != list_types:
-
             self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
                 ListTemplate=template,
                 ContinuePreviousList=True,
@@ -363,7 +368,7 @@ class COMRenderer(BaseRenderer):
         cell_mapping = []
 
         for row in _rows:
-            cell_mapping.append([row.Cells(i+1) for i in range(len(row.Cells))])
+            cell_mapping.append([row.Cells(i + 1) for i in range(len(row.Cells))])
 
         processed_cells = set()
 
@@ -553,4 +558,3 @@ class COMRenderer(BaseRenderer):
                     img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
 
         self.selection.TypeBackspace()
-
