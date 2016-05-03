@@ -58,7 +58,16 @@ insert(operations, document=document, constants=constants)
 What's with the constants part? Wordinserter is agnostic to the COM library you use. Each library exposes constant 
 values that are needed by Wordinserter in a different way: the pywin32 library exposes it as win32com.client.constants 
 whereas the comtypes library exposes them as a module that resides in comtypes.gen. Rather than guess which one you 
-are using Wordinserter requires you to pass the right one in explicitly.
+are using Wordinserter requires you to pass the right one in explicitly. If you need to mix different constant groups you 
+can use the `CombinedConstants` class:
+
+```python
+from wordinserter import CombinedConstants
+from comtypes.gen import Word as word_constants
+from comtypes.gen import Office as office_constants
+
+constants = CombinedConstants(word_constants, office_constants)
+```
 
 
 ### Install
