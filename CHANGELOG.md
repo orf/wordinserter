@@ -1,5 +1,5 @@
 ## 0.8.9 (WIP)
-Don't do the formatting "x" hack unless there is actually a format to apply.
+Don't do the formatting "x" hack unless there is actually a format to apply. Improved the speed of table creation.
 
 ## 0.8.8
 Fix line spacing after CodeBlocks. Added support for border styles in images, and for multiple constants (use the

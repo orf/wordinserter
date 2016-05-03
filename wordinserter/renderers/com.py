@@ -350,16 +350,26 @@ class COMRenderer(BaseRenderer):
 
         table.Borders.Enable = 0 if op.border == '0' else 1
 
+        # This code is super super slow, running list() on a Cells collection takes >15 seconds.
+        # https://github.com/enthought/comtypes/issues/107
+        """original_t1 = time.time()
         cell_mapping = [
             list(row.Cells) for row in table.Rows
             ]
+        original_t2 = time.time() - original_t1"""
+
+        # This code is faster, but horrible :(
+        _rows = list(table.Rows)
+        cell_mapping = []
+
+        for row in _rows:
+            cell_mapping.append([row.Cells(i+1) for i in range(len(row.Cells))])
 
         processed_cells = set()
 
         # Handling merged cells is a bitch. We do it by finding the max dimensions of the table (the max sum of all
         # colspans in a row) then creating a table with those dimensions.
         # We then enumerate through each cell in each row, and find the corresponding word cell (the actual table cell)
-        # If it has a colspan we
 
         for row_index, row in enumerate(op):
             # Loop through each row and extract the corresponding Row object from Word
