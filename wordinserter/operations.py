@@ -271,6 +271,10 @@ class Format(Operation):
         return "<{0}: {1}>".format(self.__class__.__name__,
                                    {n: getattr(self, n) for n in self.optional if getattr(self, n) is not None})
 
+    @property
+    def has_style(self):
+        return any(getattr(self, s) for s in self.optional)
+
 
 class Style(Operation):
     requires = {"name"}

@@ -457,6 +457,9 @@ class COMRenderer(BaseRenderer):
         if start > end or start == end:
             return
 
+        if not op.has_style:
+            return
+
         element_range = self.range(start, end)
 
         # Why TypeText('X')? Styles seem to overrun their containers (especially when they span an entire line). This
@@ -540,3 +543,4 @@ class COMRenderer(BaseRenderer):
                     img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
 
         self.selection.TypeBackspace()
+
