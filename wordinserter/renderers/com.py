@@ -122,10 +122,17 @@ class COMRenderer(BaseRenderer):
 
     @renders(Style)
     def style(self, op: Style):
-        old_style = self.selection.Style
+        # old_style = self.selection.Style
         self.selection.Style = self.document.Styles(op.name)
+        start = self.selection.Start
         yield
+        end = self.selection.End
         self.selection.TypeParagraph()
+
+        if op.id:
+            # Insert a bookmark
+            self.document.Bookmarks.Add(str(op.id), self.range(start, end))
+
         # self.selection.Collapse(Direction=constants.wdCollapseEnd)
         # self.selection.Style = old_style
 
@@ -258,7 +265,11 @@ class COMRenderer(BaseRenderer):
         # Here we just reset the style after making the hyperlink.
         style = self.selection.Style
         rng = self.document.Range(Start=start_range, End=self.selection.Range.End)
-        self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
+
+        if op.location.startswith('#'):
+            self.document.Hyperlinks.Add(Anchor=rng, TextToDisplay="", SubAddress=op.location.replace('#', '', 1))
+        else:
+            self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
         self.selection.Style = style
 

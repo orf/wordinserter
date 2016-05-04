@@ -22,6 +22,7 @@ class Operation(object):
         self.args = []
         self.format = None
         self.attributes = kwargs.pop("attributes", {})
+        self.id = self.attributes.pop("id", None)
         self.render = RenderData()
 
         self.source = None
