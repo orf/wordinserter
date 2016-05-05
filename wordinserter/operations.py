@@ -187,20 +187,6 @@ class Text(ChildlessOperation):
 
         return repr(txt)
 
-    def strip_whitespace(self):
-        return Text(text=self.text.strip())
-
-    def keep_some_whitespace(self):
-        # Don't know what to call this method.
-        # If self.text has whitespace around it then strip it, but keep one space
-        txt = self.text
-        if txt[0].isspace():
-            txt = " " + txt.lstrip()
-        if txt[-1].isspace():
-            txt = txt.rstrip() + " "
-
-        return Text(text=txt)
-
 
 class Paragraph(Operation):
     pass

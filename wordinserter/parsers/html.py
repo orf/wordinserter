@@ -12,20 +12,6 @@ import cssutils
 
 class HTMLParser(BaseParser):
     def __init__(self):
-        # Preserve whitespace as-is
-        self.preserve_whitespace = {
-            CodeBlock
-        }
-        # Strip whitespace but keep spaces between tags
-        self.respect_whitespace = {
-            Bold, Italic, UnderLine, Style, HyperLink, Paragraph, ListElement
-        }
-
-        # Ignore all whitespace
-        self.ignore_whitespace = {
-            Table, TableRow, NumberedList, BulletList, Span
-        }
-
         self.mapping = {
             "p": Paragraph,
             "b": Bold,
@@ -119,32 +105,12 @@ class HTMLParser(BaseParser):
                         child.remove_child(element_child)
                         self.normalize_list(element_child)
 
-    def build_element(self, element, whitespace="ignore"):
+    def build_element(self, element):
         if isinstance(element, bs4.Comment):
             return None
 
         if isinstance(element, bs4.NavigableString):
-            if whitespace == "preserve":
-                return Text(text=str(element))
-
-            elif whitespace == "ignore":
-                if element.isspace():
-                    return None
-
-                return Text(text=element.strip())
-
-            elif whitespace == "respect":
-                if element.isspace():
-                    if isinstance(element.previous_sibling, bs4.NavigableString):
-                        return None
-                    return Text(text=" ")
-
-                if element[0].isspace():
-                    element = " " + element.lstrip()
-                if element[-1].isspace():
-                    element = element.rstrip() + " "
-
-                return Text(text=str(element))
+            return Text(text=str(element))
 
         cls = self.mapping.get(element.name, IgnoredOperation)
 
@@ -179,25 +145,12 @@ class HTMLParser(BaseParser):
             cls = partial(NumberedList, type=values.get(type))
 
         instance = cls(attributes=element.attrs)
-        cls = instance.__class__
-
-        if cls in self.respect_whitespace:
-            whitespace = "respect"
-        elif cls in self.preserve_whitespace:
-            whitespace = "preserve"
-        elif cls in self.ignore_whitespace:
-            whitespace = "ignore"
-
         children = list(element.childGenerator())
 
         for idx, child in enumerate(children):
-            item = self.build_element(child, whitespace=whitespace)
+            item = self.build_element(child)
             if item is None:
                 continue
-
-            if isinstance(item, Text) and not whitespace == 'preserve':
-                if len(children) != 1:
-                    item = item.keep_some_whitespace()
 
             if isinstance(item, IgnoredOperation):
                 instance.add_children(item.children)
@@ -233,23 +186,6 @@ class HTMLParser(BaseParser):
                             args[name] = style.value.strip()
 
         instance.format = Format(**args)
-
-        if cls in (Paragraph,):
-            # Respect it but trim it on the ends
-            while instance.children and \
-                    (isinstance(instance.children[0], Text) or isinstance(instance.children[-1], Text)):
-                first, last = instance.children[0], instance.children[-1]
-                if hasattr(first, "text") and first.text.isspace():
-                    instance.children.remove(first)
-                elif hasattr(last, "text") and last.text.isspace():
-                    instance.children.remove(last)
-                elif first is last:
-                    # Only one child, strip da text
-                    instance[0].text = instance[0].text.strip()
-                    break
-                else:
-                    break
-
         instance.set_source(element)
 
         return instance
