@@ -1,8 +1,10 @@
-## 0.8.9 (WIP)
+## 0.9 (WIP)
 Don't do the formatting "x" hack unless there is actually a format to apply. Improved the speed of table creation.
 Disabled spell checking for code blocks. All nodes now support an "id" attribute, and if it is specified in a 
 heading tag a bookmark is added with the ID attribute as its name. Hyperlinks also now support a bookmark if their 
 URL's start with a "#", so `<a href="#name">` would link to `<h1 id="name">`.
+
+Majorly refactored the whitespace handling code. It not actually works :)
 
 ## 0.8.8
 Fix line spacing after CodeBlocks. Added support for border styles in images, and for multiple constants (use the

@@ -1,13 +1,17 @@
 from collections import defaultdict
 
+from wordinserter.parsers.fixes import normalize_list_elements, correct_whitespace
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
+    NumberedList, ListElement, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
     LineBreak
 import bs4
 from functools import partial
 import cssutils
+import re
+
+_COLLAPSE_REGEX = re.compile(r'\s+')
 
 
 class HTMLParser(BaseParser):
@@ -78,32 +82,13 @@ class HTMLParser(BaseParser):
 
             tokens.append(item)
 
-        self.normalize_list_elements(tokens)
+        tokens = Group(tokens)
+        normalize_list_elements(tokens)
+
+        tokens.set_parents()
+        correct_whitespace(tokens)
+
         return tokens
-
-    def normalize_list_elements(self, tokens):
-        for token in tokens:
-            if isinstance(token, BaseList):
-                self.normalize_list(token)
-            else:
-                self.normalize_list_elements(token.children)
-
-    def normalize_list(self, op: BaseList):
-        # If there are > 1 lists to move out then we need to insert it after previously moved ones,
-        # instead of before. `moved` tracks this.
-        children = list(op)
-
-        for child in children:
-            if isinstance(child, ListElement):
-                moved = 0
-                for element_child in child:
-                    if isinstance(element_child, BaseList):
-                        moved += 1
-                        # Move the list outside of the ListElement
-                        child_index = op.child_index(child)
-                        op.insert_child(child_index + moved, element_child)
-                        child.remove_child(element_child)
-                        self.normalize_list(element_child)
 
     def build_element(self, element):
         if isinstance(element, bs4.Comment):
@@ -154,6 +139,8 @@ class HTMLParser(BaseParser):
 
             if isinstance(item, IgnoredOperation):
                 instance.add_children(item.children)
+            elif not instance.is_child_allowed(item):
+                continue
             else:
                 instance.add_child(item)
 
@@ -182,7 +169,11 @@ class HTMLParser(BaseParser):
                             break
                     else:
                         name = style.name.lower().replace("-", "_")
-                        if name in Format.optional:
+                        if name in Format.NESTED_STYLES:
+                            # Not supported. Use explicit 'margin-right',
+                            # 'margin-left' etc rather than just 'margin'.
+                            pass
+                        elif name in Format.optional:
                             args[name] = style.value.strip()
 
         instance.format = Format(**args)

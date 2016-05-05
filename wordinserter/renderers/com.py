@@ -253,7 +253,8 @@ class COMRenderer(BaseRenderer):
 
         op.render.image = image
 
-        self.selection.TypeParagraph()
+        if not isinstance(op.parent, TableCell):
+            self.selection.TypeParagraph()
 
     @renders(HyperLink)
     def hyperlink(self, op: HyperLink):
@@ -480,18 +481,18 @@ class COMRenderer(BaseRenderer):
         yield
         end = self.selection.End
 
-        if start > end or start == end:
-            return
-
         if not op.has_style:
             return
+
+        should_type_x = op.should_use_x_hack
 
         element_range = self.range(start, end)
 
         # Why TypeText('X')? Styles seem to overrun their containers (especially when they span an entire line). This
         # adds a buffer to the end of the element, which is removed at the end. This is the least horrible way to do
         # this, trust us.
-        self.selection.TypeText("X")
+        if should_type_x:
+            self.selection.TypeText("X")
 
         if op.style:
             try:
@@ -568,4 +569,5 @@ class COMRenderer(BaseRenderer):
                 if op.border["color"]:
                     img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
 
-        self.selection.TypeBackspace()
+        if should_type_x:
+            self.selection.TypeBackspace()

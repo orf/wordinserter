@@ -43,8 +43,11 @@ class Operation(object):
     def set_source(self, source):
         self.source = source
 
+    def is_child_allowed(self, child):
+        return not (self.allowed_children and child.__class__.__name__ not in self.allowed_children)
+
     def _check_child_allowed(self, child):
-        allowed = not (self.allowed_children and child.__class__.__name__ not in self.allowed_children)
+        allowed = self.is_child_allowed(child)
 
         if not allowed:
             raise RuntimeError("Child {0} is not allowed in parent {1}".format(child.__class__.__name__,
@@ -96,6 +99,9 @@ class Operation(object):
     @property
     def has_children(self):
         return len(self.children) > 0
+
+    def has_parent(self, parent_cls):
+        return any(isinstance(p, parent_cls) for p in self.ancestors)
 
     @property
     def ancestors(self):
@@ -249,6 +255,14 @@ class Format(Operation):
         "border"
     }
 
+    NEEDS_X_HACK = {
+        "style",
+        "font_size",
+        "color",
+        "background_color",
+        "text_decoration"
+    }
+
     NESTED_STYLES = {"border", "margin"}
 
     def has_format(self):
@@ -261,6 +275,10 @@ class Format(Operation):
     @property
     def has_style(self):
         return any(getattr(self, s) for s in self.optional)
+    
+    @property
+    def should_use_x_hack(self):
+        return any(getattr(self, s) for s in self.NEEDS_X_HACK)
 
 
 class Style(Operation):

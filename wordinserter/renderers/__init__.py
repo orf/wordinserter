@@ -60,13 +60,7 @@ class BaseRenderer(abc.ABC):
     def ignored_element(self, *args, **kwargs):
         yield
 
-    def render(self, operations):
-        for op in operations:
-            op.set_parents()
-
-        self._render(operations)
-
-    def _render(self, operations, args=None, indent=0):
+    def render(self, operations, args=None, indent=0):
         for operation in operations:
             method = self.render_methods.get(operation.__class__, None)
             if method is None:
@@ -100,9 +94,9 @@ class BaseRenderer(abc.ABC):
 
                         with method(operation, *args or []) as new_args:
                             if isinstance(new_args, NewOperations):
-                                self._render(new_args.ops, None, indent + 1)
+                                self.render(new_args.ops, None, indent + 1)
                             else:
-                                self._render(operation.children, new_args, indent + 1)
+                                self.render(operation.children, new_args, indent + 1)
             except InsertError:
                 raise
             except Exception as e:
