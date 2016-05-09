@@ -1,4 +1,7 @@
-## 0.9 (WIP)
+## 0.9.1
+Fix table cell range handling. 
+
+## 0.9
 Don't do the formatting "x" hack unless there is actually a format to apply. Improved the speed of table creation.
 Disabled spell checking for code blocks. All nodes now support an "id" attribute, and if it is specified in a 
 heading tag a bookmark is added with the ID attribute as its name. Hyperlinks also now support a bookmark if their 

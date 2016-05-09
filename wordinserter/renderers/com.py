@@ -3,9 +3,6 @@ from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, Co
     BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, Format, \
     InlineCode, Footnote, Span, Group
 import warnings
-import requests
-from requests.exceptions import RequestException
-import tempfile
 import webcolors
 
 WORD_WDCOLORINDEX_MAPPING = {
@@ -231,12 +228,7 @@ class COMRenderer(BaseRenderer):
 
         location = op.get_image_path()
 
-        if isinstance(op.parent, TableCell):
-            # Inserting an image inside a TableCell causes some issues if you use self.selection. It inserts it
-            # to the leftmost cell for no reason :/
-            rng = op.parent.render.cell_object.Range
-        else:
-            rng = self.selection
+        rng = self.selection
 
         image = rng.InlineShapes.AddPicture(FileName=location, SaveWithDocument=True)
 
@@ -472,7 +464,9 @@ class COMRenderer(BaseRenderer):
 
     @renders(TableCell)
     def table_cell(self, op):
-        op.render.cell_object.select()
+        rng = op.render.cell_object.Range
+        rng.Collapse()
+        rng.Select()
         yield
 
     @renders(Format)
