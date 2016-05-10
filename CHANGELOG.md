@@ -1,3 +1,6 @@
+## 0.9.2
+Fix handling of background colors
+
 ## 0.9.1
 Fix table cell range handling. 
 

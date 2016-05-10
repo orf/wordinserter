@@ -20,7 +20,7 @@ class WordFormatter(object):
         try:
             name = webcolors.hex_to_name(value).lower()
             if name in WORD_WDCOLORINDEX_MAPPING:
-                return WORD_WDCOLORINDEX_MAPPING[name]
+                return getattr(constants, WORD_WDCOLORINDEX_MAPPING[name])
             # Try and get the color from the wdColors enumeration
             return getattr(constants, "wd" + name.capitalize())
         except (AttributeError, ValueError):
@@ -51,12 +51,18 @@ class WordFormatter(object):
 
     @staticmethod
     def style_to_wdcolor(value):
-        if value.startswith('rgb('):
-            value = WordFormatter.rgbstring_to_hex(value)
-        elif value in webcolors.css3_names_to_hex:
-            value = webcolors.css3_names_to_hex[value]
+        if value == 'none':
+            return None
 
-        return WordFormatter.hex_to_wdcolor(value)
+        try:
+            if value.startswith('rgb('):
+                value = WordFormatter.rgbstring_to_hex(value)
+            elif value in webcolors.css3_names_to_hex:
+                value = webcolors.css3_names_to_hex[value]
+
+            return WordFormatter.hex_to_wdcolor(value)
+        except Exception:
+            return None
 
     @staticmethod
     def size_to_points(css_value):
@@ -130,8 +136,8 @@ class COMRenderer(BaseRenderer):
             # Insert a bookmark
             self.document.Bookmarks.Add(str(op.id), self.range(start, end))
 
-        # self.selection.Collapse(Direction=constants.wdCollapseEnd)
-        # self.selection.Style = old_style
+            # self.selection.Collapse(Direction=constants.wdCollapseEnd)
+            # self.selection.Style = old_style
 
     @renders(Bold)
     def bold(self, op: Bold):
@@ -514,12 +520,19 @@ class COMRenderer(BaseRenderer):
                     # We don't want to center a table.
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
 
-        if op.background_color:
-            if isinstance(parent_operation, TableCell):
-                bg_color = WordFormatter.style_to_wdcolor(op.background_color)
-                parent_operation.render.cell_object.Shading.BackgroundPatternColor = bg_color
+        if op.background:
+            backround = op.background.split(" ")[0]
+            # This needs refactoring :/
+            if isinstance(parent_operation, Table):
+                bg_color = WordFormatter.style_to_wdcolor(backround)
+                if bg_color:
+                    parent_operation.render.table.Shading.BackgroundPatternColor = bg_color
+            elif isinstance(parent_operation, TableCell):
+                bg_color = WordFormatter.style_to_wdcolor(backround)
+                if bg_color:
+                    parent_operation.render.cell_object.Shading.BackgroundPatternColor = bg_color
             else:
-                bg_color = WordFormatter.style_to_highlight_wdcolor(op.background_color, self.constants)
+                bg_color = WordFormatter.style_to_highlight_wdcolor(backround, self.constants)
                 if bg_color:
                     element_range.HighlightColorIndex = bg_color
 

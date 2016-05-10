@@ -245,7 +245,7 @@ class Format(Operation):
         "style",
         "font_size",
         "color",
-        "background_color",
+        "background",
         "text_decoration",
         "margin",
         "vertical_align",
@@ -255,11 +255,15 @@ class Format(Operation):
         "border"
     }
 
+    FORMAT_ALIASES = {
+        "background_color": "background"
+    }
+
     NEEDS_X_HACK = {
         "style",
         "font_size",
         "color",
-        "background_color",
+        "background",
         "text_decoration"
     }
 

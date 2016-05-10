@@ -172,8 +172,11 @@ class HTMLParser(BaseParser):
                         if name in Format.NESTED_STYLES:
                             # Not supported. Use explicit 'margin-right',
                             # 'margin-left' etc rather than just 'margin'.
-                            pass
-                        elif name in Format.optional:
+                            continue
+                        elif name in Format.FORMAT_ALIASES:
+                            name = Format.FORMAT_ALIASES[name]
+
+                        if name in Format.optional:
                             args[name] = style.value.strip()
 
         instance.format = Format(**args)
