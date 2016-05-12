@@ -76,9 +76,9 @@ class WordFormatter(object):
             if css_value.endswith("px"):
                 css_value = css_value[:-2]
             elif css_value.endswith("pt"):
-                return int(css_value[:-2])
+                return round(float(css_value[:-2]))
 
-            css_value = int(css_value)
+            css_value = round(float(css_value))
 
         return css_value * 0.75
 

@@ -1,3 +1,6 @@
+## 0.9.2.2
+Fix using int() when floats are expected.
+
 ## 0.9.2
 Fix handling of background colors
 
