@@ -289,6 +289,7 @@ class COMRenderer(BaseRenderer):
 
         gallery_type, list_types = self._get_constants_for_list(op)
         gallery = self.word.ListGalleries(gallery_type)
+        template = gallery.ListTemplates(1)
 
         if op.type:
             style_values = {
@@ -303,9 +304,6 @@ class COMRenderer(BaseRenderer):
                         break
                 else:
                     warnings.warn('Unable to locate list style for {0}, using default'.format(op.type))
-                    template = gallery.ListTemplates(1)
-        else:
-            template = gallery.ListTemplates(1)
 
         if first_list:
             self.selection.Range.ListFormat.ApplyListTemplateWithLevel(
@@ -313,6 +311,9 @@ class COMRenderer(BaseRenderer):
                 ContinuePreviousList=False,
                 DefaultListBehavior=self.constants.wdWord10ListBehavior
             )
+
+            if op.format.style:
+                self._apply_style_to_range(op.format)
         else:
             self.selection.Range.ListFormat.ListIndent()
 
@@ -475,6 +476,15 @@ class COMRenderer(BaseRenderer):
         rng.Select()
         yield
 
+    def _apply_style_to_range(self, op, rng=None):
+        rng = rng or self.selection.Range
+
+        for klass in op.style or []:
+            try:
+                rng.Style = klass
+            except Exception:
+                warnings.warn("Unable to apply style name '{0}'".format(klass))
+
     @renders(Format)
     def format(self, op, parent_operation):
         start = self.selection.Start
@@ -494,11 +504,8 @@ class COMRenderer(BaseRenderer):
         if should_type_x:
             self.selection.TypeText("X")
 
-        if op.style:
-            try:
-                element_range.Style = op.style
-            except Exception:
-                warnings.warn("Unable to apply style name '{0}'".format(op.style))
+        if op.style and not isinstance(parent_operation, BaseList):
+            self._apply_style_to_range(op, element_range)
 
         if op.font_size:
             size = WordFormatter.size_to_points(op.font_size)

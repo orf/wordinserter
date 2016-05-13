@@ -1,3 +1,6 @@
+## 0.9.2.3
+Improve list formatting
+
 ## 0.9.2.2
 Fix using int() when floats are expected.
 

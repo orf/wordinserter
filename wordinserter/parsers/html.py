@@ -154,7 +154,7 @@ class HTMLParser(BaseParser):
                 # This selects the first one which isn't an empty string. We could handle multiple classes here somehow.
                 vals = [v for v in value if v]
                 if vals:
-                    args["style"] = vals[0]
+                    args["style"] = vals
             elif attribute == "style":
                 styles = cssutils.parseStyle(value)
 
