@@ -1,3 +1,7 @@
+## 0.9.2.4
+Fix CodeBlock spacing styles being incorrectly reverted after the 
+CodeBlock has finished.
+
 ## 0.9.2.3
 Improve list formatting
 

@@ -204,10 +204,6 @@ class COMRenderer(BaseRenderer):
 
     @renders(CodeBlock)
     def code_block(self, op: CodeBlock):
-        previous_style = self.selection.Style
-        previous_font_name, previous_font_size, previous_linespace = self.selection.Font.Name, \
-                                                                     self.selection.Font.Size, \
-                                                                     self.selection.ParagraphFormat.LineSpacingRule
         self.selection.Style = self.document.Styles("No Spacing")
         self.selection.Font.Name = "Courier New"
 
@@ -223,11 +219,9 @@ class COMRenderer(BaseRenderer):
         end = self.selection.End
         rng = self.range(start, end)
         rng.NoProofing = True
-
+        self.selection.ParagraphFormat.SpaceAfter = 8
         self.selection.TypeParagraph()
-        self.selection.Font.Name = previous_font_name
-        self.selection.Style = previous_style
-        self.selection.ParagraphFormat.LineSpacingRule = previous_linespace
+        self.selection.ClearFormatting()
 
     @renders(Image)
     def image(self, op: Image):
