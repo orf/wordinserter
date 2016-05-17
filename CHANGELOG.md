@@ -1,3 +1,7 @@
+## 0.9.2.5
+Improve error support, InsertErrors now store the `exc_info()` of the 
+inner exception.
+
 ## 0.9.2.4
 Fix CodeBlock spacing styles being incorrectly reverted after the 
 CodeBlock has finished.

@@ -1,5 +1,8 @@
 import abc
 import inspect
+
+import sys
+
 from wordinserter.operations import ChildlessOperation, IgnoredOperation, Group, Text
 from wordinserter.exceptions import InsertError
 import contextlib
@@ -100,7 +103,7 @@ class BaseRenderer(abc.ABC):
             except InsertError:
                 raise
             except Exception as e:
-                raise InsertError(operation) from e
+                raise InsertError(operation, sys.exc_info()) from e
 
 
 class DebugMethod(object):

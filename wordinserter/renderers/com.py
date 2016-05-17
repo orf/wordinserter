@@ -196,9 +196,7 @@ class COMRenderer(BaseRenderer):
         previous_style = self.selection.Style
         previous_font_name, previous_font_size = self.selection.Font.Name, self.selection.Font.Size
         self.selection.Font.Name = "Courier New"
-
         yield
-
         self.selection.Style = previous_style
         self.selection.Font.Name = previous_font_name
 
@@ -456,7 +454,6 @@ class COMRenderer(BaseRenderer):
 
         table.Select()
         yield
-
         end_range.Select()
 
     @renders(TableRow)
