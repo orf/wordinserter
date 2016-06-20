@@ -322,6 +322,7 @@ class COMRenderer(BaseRenderer):
 
         if first_list:
             self.selection.Range.ListFormat.RemoveNumbers(NumberType=self.constants.wdNumberParagraph)
+            self.selection.Style = self.constants.wdStyleNormal
         else:
             self.selection.Range.ListFormat.ListOutdent()
 
