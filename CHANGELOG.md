@@ -1,3 +1,6 @@
+## 0.9.2.6
+Handle hyperlinks after lists correctly.
+
 ## 0.9.2.5
 Improve error support, InsertErrors now store the `exc_info()` of the 
 inner exception.
