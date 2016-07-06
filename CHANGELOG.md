@@ -1,3 +1,6 @@
+## 0.9.2.7
+Handle broken images correctly. If an image is invalid then the `404.png` will be inserted.
+
 ## 0.9.2.6
 Handle hyperlinks after lists correctly.
 

@@ -223,18 +223,21 @@ class COMRenderer(BaseRenderer):
 
     @renders(Image)
     def image(self, op: Image):
-
-        location = op.get_image_path()
+        location, height, width = op.get_image_path_and_dimensions()
 
         rng = self.selection
 
-        image = rng.InlineShapes.AddPicture(FileName=location, SaveWithDocument=True)
+        try:
+            image = rng.InlineShapes.AddPicture(FileName=location, SaveWithDocument=True)
+        except Exception:
+            location, height, width = op.get_404_image_and_dimensions()
+            image = rng.InlineShapes.AddPicture(FileName=location, SaveWithDocument=True)
 
-        if op.height:
-            image.Height = op.height * 0.75
+        if height:
+            image.Height = height * 0.75
 
-        if op.width:
-            image.Width = op.width * 0.75
+        if width:
+            image.Width = width * 0.75
 
         if op.caption:
             self.selection.TypeParagraph()

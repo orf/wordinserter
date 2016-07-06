@@ -86,7 +86,7 @@ class Operation(object):
         if idx == 0:
             return None
 
-        return self.parent[idx-1]
+        return self.parent[idx - 1]
 
     @property
     def next_sibling(self):
@@ -110,7 +110,7 @@ class Operation(object):
         while parent:
             yield parent
             parent = parent.parent
-            
+
     @property
     def descendants(self):
         for child in self.children:
@@ -183,7 +183,7 @@ class Text(ChildlessOperation):
 
     def __repr__(self):
         return "<Text '{0}' />".format(self.short_text)
-    
+
     @property
     def short_text(self):
         if len(self.text) > 10:
@@ -279,7 +279,7 @@ class Format(Operation):
     @property
     def has_style(self):
         return any(getattr(self, s) for s in self.optional)
-    
+
     @property
     def should_use_x_hack(self):
         return any(getattr(self, s) for s in self.NEEDS_X_HACK)
@@ -304,42 +304,50 @@ class Image(ChildlessOperation):
 
         return temp.name
 
-    def get_404_image(self):
+    def get_404_image_and_dimensions(self):
         import pkg_resources
         not_found_image = pkg_resources.resource_string(__name__, "images/404.png")
-        return self.write_to_temp_file(not_found_image)
+        # Hard coded widths :'(
+        return self.write_to_temp_file(not_found_image), 300, 220
 
-    def get_image_path(self):
+    def get_image_path_and_dimensions(self):
         if hasattr(self, "_path_cache"):
             return self._path_cache
 
         result = self.location
+        original_height, original_width = self.height, self.width
+        height, width = original_height, original_width
         split = urlsplit(result)
 
-        if split.scheme in {"http", "https"}:
+        if split.scheme not in {"http", "https", "data"}:
+            warnings.warn('Invalid image scheme {scheme}: {url}'.format(url=result, scheme=split.scheme))
+            result, height, width = self.get_404_image_and_dimensions()
+        elif split.scheme in {"http", "https"}:
             try:
                 response = requests.get(result, verify=False, timeout=5)
             except requests.RequestException as e:
                 warnings.warn('Unable to prefetch image {url}: {ex}'.format(url=result, ex=e))
-                result = self.get_404_image()
+                result, height, width = self.get_404_image_and_dimensions()
             else:
                 result = self.write_to_temp_file(response.content)
-
         elif split.scheme == 'data':
-            mimetype, rest = split.path.split(";")
-            encoding, data = rest.split(",")
-
-            if not mimetype.startswith("image/"):
-                raise RuntimeError("Mimetype {0} is not an image type!".format(mimetype))
-
-            if not encoding == "base64":
-                raise RuntimeError("Unknown data encoding {0}".format(encoding))
-
-            image_content = codecs.decode(bytes(data, "utf8"), "base64")
-            result = self.write_to_temp_file(image_content)
+            try:
+                mimetype, rest = split.path.split(";")
+                encoding, data = rest.split(",")
+            except Exception:
+                warnings.warn("Could not parse data URI! First 25 chars: {data}".format(data=result[:25]))
+                result, height, width = self.get_404_image_and_dimensions()
+            else:
+                if not mimetype.startswith("image/") or not encoding == "base64":
+                    warnings.warn("Mimetype {0} is not an image type, or unknown encoding {1}!".format(mimetype,
+                                                                                                       encoding))
+                    result, height, width = self.get_404_image_and_dimensions()
+                else:
+                    image_content = codecs.decode(bytes(data, "utf8"), "base64")
+                    result = self.write_to_temp_file(image_content)
 
         self._path_cache = result
-        return result
+        return result, original_height or height, original_width or width
 
 
 class HyperLink(Operation):
@@ -350,7 +358,7 @@ class HyperLink(Operation):
 class BaseList(Operation):
     allowed_children = {"ListElement", "BulletList", "NumberedList"}
     requires_children = True
-    
+
     @property
     def depth(self):
         return sum(1 for p in self.ancestors if isinstance(p, BaseList))
