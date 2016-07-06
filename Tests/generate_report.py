@@ -7,29 +7,27 @@ import time
 import subprocess
 import os
 import glob
-import CommonMark
 import sys
 
 if not os.path.exists("images"):
     os.mkdir("images")
 else:
     import shutil
+
     shutil.rmtree("images")
     os.mkdir("images")
 
 image_directory = pathlib.Path("images")
-temp_directory = pathlib.Path(tempfile.mkdtemp())
 
 word = CreateObject("Word.Application")
 word.Visible = False
 
 from comtypes.gen import Word as constants
 
-imagemagick = "convert.exe"
+imagemagick = "magick.exe"
 
 # [(file name, word image, html image)]
 results = []
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 1:
@@ -41,6 +39,7 @@ if __name__ == "__main__":
 
     for file in file_names:
         if file.name.endswith(".html"):
+            temp_directory = pathlib.Path(tempfile.mkdtemp())
 
             document = word.Documents.Add()
 
@@ -66,13 +65,13 @@ if __name__ == "__main__":
 
                 # Now convert that PDF to a PNG
                 png_path = temp_directory / (file.name + ".png")
-
-                code = subprocess.call(
-                    '"{0}" -interlace none -density 300 -trim -quality 80 {1} {2} '.format(
+                convert_command = '"{0}" -interlace none -density 300 -quality 80 {1} -trim {2} '.format(
                     imagemagick,
                     str(pdf_path),
                     str(png_path)
-                ), shell=True)
+                )
+                print("[ImageMagick]: " + convert_command)
+                code = subprocess.call(convert_command, shell=True)
 
                 if code != 0:
                     print("Error converting PDF to PNG, exit code {0}".format(code))
@@ -80,13 +79,15 @@ if __name__ == "__main__":
 
                 if not png_path.exists():
                     # Multiple images, we need to combine them together
-                    combined_images = glob.glob(str(temp_directory) + file.name + "-*.png")
+                    combined_images = glob.glob(str(temp_directory) + "\*.png")
+                    combine_command = '"{0}" {1} -append {2}'.format(
+                        imagemagick,
+                        " ".join(combined_images),
+                        str(png_path)
+                    )
+                    print("[ImageMagick]: " + combine_command)
                     code = subprocess.call(
-                        '"{0}" {1} -append {2}'.format(
-                            imagemagick,
-                            " ".join(combined_images),
-                            str(png_path)
-                        )
+                        combine_command
                     )
 
                     if code != 0:
@@ -101,20 +102,20 @@ if __name__ == "__main__":
                     p = CommonMark.DocParser()
                     html = CommonMark.HTMLRenderer().render(p.parse(content))
                     tf = tempfile.mktemp(".html")
-                    with open(tf,"w") as f:
+                    with open(tf, "w") as f:
                         f.write(html)
                     browser.get(tf)
 
                 html_path = temp_directory / (file.name + ".html.png")
 
                 browser.save_screenshot(str(html_path))
-
-                code = subprocess.call(
-                    '"{0}" -trim {1} {2} '.format(
-                    imagemagick,
-                    str(html_path),
-                    str(html_path)
-                ), shell=True)
+                trim_command = '"{0}" {1} -trim {2} '.format(
+                        imagemagick,
+                        str(html_path),
+                        str(html_path)
+                    )
+                print("[ImageMagick]: " + trim_command)
+                code = subprocess.call(trim_command, shell=True)
 
                 if code != 0:
                     print("Error trimming browser screenshot, exit code {0}".format(code))
@@ -129,7 +130,6 @@ if __name__ == "__main__":
 
             finally:
                 document.Close(SaveChanges=constants.wdDoNotSaveChanges)
-
 
     with open("report.html", "w") as fd:
 
@@ -168,4 +168,5 @@ if __name__ == "__main__":
 
     browser.quit()
     import webbrowser
+
     webbrowser.open("report.html")

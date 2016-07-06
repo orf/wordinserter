@@ -1,0 +1,20 @@
+<p>Invalid local file:</p>
+<img src="file://C:/invalid/something.png">
+
+<p>Invalid remote file:</p>
+<img src="http://doesnotexistIhopelesehtistestwillbreak.com/whatever.jpeg">
+
+<p>Nonsense data URI</p>
+<img src="data://sadsadsadsasad/">
+
+<p>Malformed data URI</p>
+<img src="data:image/gif;base64;asdsadsadsafdsadsadsad">
+
+<p>Invalid scheme</p>
+<img src="ftp://doesnotexistIhopelesehtistestwillbreak.com/whatever.jpeg">
+
+<p>Nonsense attribute</p>
+<img src="why hello there i hope you are well">
+
+<p>Broken image with size</p>
+<img src="nonsense" height="100" width="300">
