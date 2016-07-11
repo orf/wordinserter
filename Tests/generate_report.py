@@ -109,9 +109,8 @@ if __name__ == "__main__":
                 html_path = temp_directory / (file.name + ".html.png")
 
                 browser.save_screenshot(str(html_path))
-                trim_command = '"{0}" {1} -trim {2} '.format(
+                trim_command = '"{0}" {1} -fuzz 1% -trim  -interlace none -density 300 -quality 80 +repage {1} '.format(
                         imagemagick,
-                        str(html_path),
                         str(html_path)
                     )
                 print("[ImageMagick]: " + trim_command)

@@ -38,6 +38,8 @@ class BaseRenderer(abc.ABC):
         for name, method in inspect.getmembers(self, inspect.ismethod):
             if hasattr(method, "renders_operations"):
                 for op in method.renders_operations:
+                    if op in self.render_methods:
+                        raise RuntimeError("{0} has multiple renderer functions defined!".format(op.__class__))
                     self.render_methods[op] = method
 
     def _call_hook(self, key, operation):

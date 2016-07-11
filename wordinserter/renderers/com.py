@@ -523,18 +523,18 @@ class COMRenderer(BaseRenderer):
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
 
         if op.background:
-            backround = op.background.split(" ")[0]
+            background = op.background.split(" ")[0]
             # This needs refactoring :/
             if isinstance(parent_operation, Table):
-                bg_color = WordFormatter.style_to_wdcolor(backround)
+                bg_color = WordFormatter.style_to_wdcolor(background)
                 if bg_color:
                     parent_operation.render.table.Shading.BackgroundPatternColor = bg_color
             elif isinstance(parent_operation, TableCell):
-                bg_color = WordFormatter.style_to_wdcolor(backround)
+                bg_color = WordFormatter.style_to_wdcolor(background)
                 if bg_color:
                     parent_operation.render.cell_object.Shading.BackgroundPatternColor = bg_color
             else:
-                bg_color = WordFormatter.style_to_highlight_wdcolor(backround, self.constants)
+                bg_color = WordFormatter.style_to_highlight_wdcolor(background, self.constants)
                 if bg_color:
                     element_range.HighlightColorIndex = bg_color
 
