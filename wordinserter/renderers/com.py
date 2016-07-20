@@ -18,7 +18,7 @@ class WordFormatter(object):
     @staticmethod
     def style_to_highlight_wdcolor(value, constants):
         try:
-            name = webcolors.hex_to_name(value).lower()
+            name = webcolors.hex_to_name(value).lower() if value.startswith("#") else value.lower()
             if name in WORD_WDCOLORINDEX_MAPPING:
                 return getattr(constants, WORD_WDCOLORINDEX_MAPPING[name])
             # Try and get the color from the wdColors enumeration
@@ -88,6 +88,7 @@ class COMRenderer(BaseRenderer):
         self.word = document.Application
         self.document = document
         self.constants = constants
+        self._format_stack = None
 
         if range is not None:
             range.Select()
@@ -480,8 +481,36 @@ class COMRenderer(BaseRenderer):
             except Exception:
                 warnings.warn("Unable to apply style name '{0}'".format(klass))
 
+    def render_operation(self, operation, *args, **kwargs):
+        if operation.format is not None \
+                and operation.format.has_format() \
+                and operation.format.__class__ in self.render_methods:
+            format_func = self.collect_format_data
+        else:
+            format_func = self.ignored_element
+
+        if 'format_list' in kwargs:
+            format_list = kwargs.pop('format_list')
+        else:
+            format_list = self._format_stack
+
+        child_format_list = []
+
+        with format_func(operation.format, operation, format_list):
+            super().render_operation(operation, *args, **kwargs, format_list=child_format_list)
+
+        if child_format_list:
+            format_list.append(child_format_list)
+
+    def render(self, *args, **kwargs):
+        self._format_stack = []
+
+        super().render(*args, **kwargs)
+        self.apply_recursive_formatting(self._format_stack)
+        self._format_stack = None
+
     @renders(Format)
-    def format(self, op, parent_operation):
+    def collect_format_data(self, op, parent_operation, format_stack):
         start = self.selection.Start
         yield
         end = self.selection.End
@@ -489,15 +518,23 @@ class COMRenderer(BaseRenderer):
         if not op.has_style:
             return
 
-        should_type_x = op.should_use_x_hack
+        format_stack.append((op, parent_operation, self.range(start, end)))
 
-        element_range = self.range(start, end)
+    def apply_recursive_formatting(self, stack):
+        for item in stack:
+            if isinstance(item, tuple):
+                self.handle_format(*item)
+            else:
+                self.apply_recursive_formatting(item)
+
+    def handle_format(self, op, parent_operation, element_range):
+        # should_type_x = op.should_use_x_hack
 
         # Why TypeText('X')? Styles seem to overrun their containers (especially when they span an entire line). This
         # adds a buffer to the end of the element, which is removed at the end. This is the least horrible way to do
         # this, trust us.
-        if should_type_x:
-            self.selection.TypeText("X")
+        # if should_type_x:
+        #    self.selection.TypeText("X")
 
         if op.style and not isinstance(parent_operation, BaseList):
             self._apply_style_to_range(op, element_range)
@@ -577,6 +614,3 @@ class COMRenderer(BaseRenderer):
 
                 if op.border["color"]:
                     img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
-
-        if should_type_x:
-            self.selection.TypeBackspace()

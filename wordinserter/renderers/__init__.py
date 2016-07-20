@@ -65,43 +65,44 @@ class BaseRenderer(abc.ABC):
     def ignored_element(self, *args, **kwargs):
         yield
 
-    def render(self, operations, args=None, indent=0):
-        for operation in operations:
-            method = self.render_methods.get(operation.__class__, None)
-            if method is None:
-                raise NotImplementedError(
-                    "Operation {0} not supported by this renderer".format(operation.__class__.__name__))
+    def render_operation(self, operation, args=None, indent=0, **kwargs):
+        method = self.render_methods.get(operation.__class__, None)
+        if method is None or not callable(method):  # The callable check isn't strictly needed, but Pycharm likes it
+            raise NotImplementedError(
+                "Operation {0} not supported by this renderer".format(operation.__class__.__name__))
 
-            if operation.format is not None \
-                    and operation.format.has_format() \
-                    and operation.format.__class__ in self.render_methods:
-                format_func = self.render_methods[operation.format.__class__]
+        with self.with_hooks(operation):
+            if isinstance(operation, ChildlessOperation):
+                if self.debug:
+                    output = operation.__class__.__name__ \
+                        if not isinstance(operation, Text) else operation.short_text
+
+                    output = output.encode(errors="replace")
+
+                    print((" " * indent) + str(output))
+
+                method(operation, *args or [])
+
             else:
-                format_func = self.ignored_element
+                if self.debug:
+                    method = DebugMethod(method, indent)
 
-            try:
-                with self.with_hooks(operation), format_func(operation.format, operation):
-                    if isinstance(operation, ChildlessOperation):
-
-                        if self.debug:
-                            output = operation.__class__.__name__ \
-                                if not isinstance(operation, Text) else operation.short_text
-
-                            output = output.encode(errors="replace")
-
-                            print((" " * indent) + str(output))
-
-                        method(operation, *args or [])
-
+                with method(operation, *args or []) as new_args:
+                    if isinstance(new_args, NewOperations):
+                        self._render(new_args.ops, None, indent + 1, **kwargs)
                     else:
-                        if self.debug:
-                            method = DebugMethod(method, indent)
+                        self._render(operation.children, new_args, indent + 1, **kwargs)
 
-                        with method(operation, *args or []) as new_args:
-                            if isinstance(new_args, NewOperations):
-                                self.render(new_args.ops, None, indent + 1)
-                            else:
-                                self.render(operation.children, new_args, indent + 1)
+    def render(self, *args, **kwargs):
+        # This is the entrypoint to rendering something. This is here so we can override this function,
+        # which is the first one to be called when rendering. The _render is reentrant, so it gets called by
+        # render_operation, so this is the place to do setup/teardown code in subclasses.
+        return self._render(*args, **kwargs)
+
+    def _render(self, operations, args=None, indent=0, **kwargs):
+        for operation in operations:
+            try:
+                self.render_operation(operation, args=None, indent=0, **kwargs)
             except InsertError:
                 raise
             except Exception as e:
