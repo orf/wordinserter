@@ -1,3 +1,7 @@
+## 0.9.3
+Correctly handle CSS inheritance: child styles are applied after the parent ones (before this they were
+applied top down, children first). This means child styles correctly override parent ones.
+
 ## 0.9.2.7
 Handle broken images correctly. If an image is invalid then the `404.png` will be inserted.
 
