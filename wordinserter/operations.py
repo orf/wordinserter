@@ -250,6 +250,7 @@ class Format(Operation):
         "margin",
         "vertical_align",
         "text_align",
+        "writing_mode",
         "width",
         "height",
         "border"
