@@ -595,6 +595,13 @@ class COMRenderer(BaseRenderer):
                 if op.text_align in alignment:
                     parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.text_align]
 
+        if op.writing_mode:
+            orientations = {"vertical-lr": 1, "sideways-lr": 2}
+            if isinstance(parent_operation, TableCell):
+                orientation = orientations.get(op.writing_mode)
+                if orientation is not None:
+                    parent_operation.render.cell_object.Range.Orientation = orientation
+
         if op.border:
             if isinstance(parent_operation, Image):
                 img = parent_operation.render.image
