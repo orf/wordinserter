@@ -96,10 +96,8 @@ insert(operations, document=document, constants=constants)
 
 ```
 
-This will render "Hello Word" in red. There is one major caveat: Rules are applied top to bottom, unlike in a browser
-where parent CSS properties are hidden/overridden by the children. The **opposite** happens here, if a child's CSS
-property overrides a parents then it's the **parents** that will be applied, not the child's. This will hopefully be
-improved in the future.
+This will render "Hello Word" in red. Inheritance is respected, so child styles override parent ones.
+
 
 #### Why aren't my lists showing up properly?
 There are two ways people write lists in HTML, one with each sub-list as a child of the parent list, or as a child of a
