@@ -1,3 +1,6 @@
+## 0.9.4
+Add support for rotated text in table cells
+
 ## 0.9.3
 Correctly handle CSS inheritance: child styles are applied after the parent ones (before this they were
 applied top down, children first). This means child styles correctly override parent ones.
