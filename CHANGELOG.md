@@ -1,3 +1,6 @@
+## 0.9.4.1
+Don't error with images that have no src attribute.
+
 ## 0.9.4
 Add support for rotated text in table cells
 

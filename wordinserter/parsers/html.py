@@ -100,11 +100,14 @@ class HTMLParser(BaseParser):
         cls = self.mapping.get(element.name, IgnoredOperation)
 
         if cls is Image:
-            cls = partial(Image,
-                          height=int(element.attrs.get("height", 0)),
-                          width=int(element.attrs.get("width", 0)),
-                          caption=element.attrs.get("alt", None),
-                          location=element.attrs["src"])
+            if not element.attrs.get("src", None):
+                cls = IgnoredOperation
+            else:
+                cls = partial(Image,
+                              height=int(element.attrs.get("height", 0)),
+                              width=int(element.attrs.get("width", 0)),
+                              caption=element.attrs.get("alt", None),
+                              location=element.attrs["src"])
         elif cls is HyperLink:
             if "href" not in element.attrs:
                 cls = IgnoredOperation
