@@ -49,13 +49,18 @@ class Operation(object):
     def _check_child_allowed(self, child):
         allowed = self.is_child_allowed(child)
 
+        if isinstance(child, Text) and not allowed:
+            return False
+
         if not allowed:
             raise RuntimeError("Child {0} is not allowed in parent {1}".format(child.__class__.__name__,
                                                                                self.__class__.__name__))
 
+        return True
+
     def add_child(self, child):
-        self._check_child_allowed(child)
-        self.children.append(child)
+        if self._check_child_allowed(child):
+            self.children.append(child)
 
     def add_children(self, children):
         for child in children:
