@@ -423,3 +423,8 @@ class TableCell(Operation):
 
 class Footnote(ChildlessOperation):
     pass
+
+
+class Heading(Operation):
+    requires = {'level'}
+    allowed_children = {'Text'}

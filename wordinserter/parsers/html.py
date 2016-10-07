@@ -5,7 +5,7 @@ from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
     NumberedList, ListElement, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
-    LineBreak
+    LineBreak, Heading
 import bs4
 from functools import partial
 import cssutils
@@ -28,10 +28,10 @@ class HTMLParser(BaseParser):
             "div": Group,
             "span": Span,
 
-            "h1": partial(Style, name="Heading 1"),
-            "h2": partial(Style, name="Heading 2"),
-            "h3": partial(Style, name="Heading 3"),
-            "h4": partial(Style, name="Heading 4"),
+            "h1": partial(Heading, level=1),
+            "h2": partial(Heading, level=2),
+            "h3": partial(Heading, level=3),
+            "h4": partial(Heading, level=4),
 
             "ul": BulletList,
             "ol": NumberedList,

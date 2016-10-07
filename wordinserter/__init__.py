@@ -1,8 +1,7 @@
 
-from .parsers import HTMLParser, MarkdownParser, BaseParser
-from .renderers import COMRenderer, BaseRenderer
+from .parsers import HTMLParser, MarkdownParser
+from .renderers import COMRenderer
 from .exceptions import InsertError
-from .utils import CombinedConstants
 import inspect
 
 parsers = {

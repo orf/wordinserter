@@ -1,7 +1,7 @@
 from . import BaseRenderer, renders
 from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
     BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, Format, \
-    InlineCode, Footnote, Span, Group
+    InlineCode, Footnote, Span, Group, Heading
 import warnings
 import webcolors
 
@@ -123,6 +123,12 @@ class COMRenderer(BaseRenderer):
     @renders(Span)
     def span(self, op: Span):
         yield
+
+    @renders(Heading)
+    def heading(self, op: Heading):
+        style = Style(children=op.children, name="Heading {0}".format(op.level))
+
+        yield self.new_operations(style)
 
     @renders(Style)
     def style(self, op: Style):
