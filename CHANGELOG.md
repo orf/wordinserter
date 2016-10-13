@@ -1,3 +1,6 @@
+## 0.9.4.3
+Fix for some python 3.5 specific syntax
+
 ## 0.9.4.2
 Ignore text elements from child validation
 
