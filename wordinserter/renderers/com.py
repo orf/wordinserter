@@ -497,7 +497,7 @@ class COMRenderer(BaseRenderer):
         child_format_list = []
 
         with format_func(operation.format, operation, format_list):
-            super().render_operation(operation, *args, **kwargs, format_list=child_format_list)
+            super().render_operation(operation, *args, format_list=child_format_list, **kwargs)
 
         if child_format_list:
             format_list.append(child_format_list)
