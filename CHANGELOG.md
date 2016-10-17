@@ -1,5 +1,6 @@
 ## 0.9.4.4
-Fix Heading element not being correctly rendered
+Fix Heading element not being correctly rendered, and fix cell table widths throwing an error if they are 
+pixel based but the parents are percentage based
 
 ## 0.9.4.3
 Fix for some python 3.5 specific syntax
