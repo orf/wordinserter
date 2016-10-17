@@ -35,10 +35,13 @@ if __name__ == "__main__":
     else:
         file_names = list(pathlib.Path("docs").iterdir())
 
-    browser = webdriver.Firefox()
+    browser = webdriver.Chrome()
+
+    print("Handing {0} files".format(len(file_names)))
 
     for file in file_names:
         if file.name.endswith(".html"):
+            print(file)
             temp_directory = pathlib.Path(tempfile.mkdtemp())
 
             document = word.Documents.Add()
@@ -144,7 +147,7 @@ if __name__ == "__main__":
             <thead>
                 <th>File Name</th>
                 <th>WordInserter Output</th>
-                <th>Firefox Output</th>
+                <th>Chrome Output</th>
             </thead>
             <tbody>
         """)

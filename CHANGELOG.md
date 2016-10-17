@@ -1,3 +1,6 @@
+## 0.9.4.4
+Fix Heading element not being correctly rendered
+
 ## 0.9.4.3
 Fix for some python 3.5 specific syntax
 

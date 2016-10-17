@@ -53,7 +53,7 @@ class BaseRenderer(abc.ABC):
                 hook(operation, self)
 
     def new_operations(self, operations):
-        return NewOperations(operations)
+        return NewOperations(Group(operations))
 
     @contextlib.contextmanager
     def with_hooks(self, operation):

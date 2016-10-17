@@ -2,8 +2,8 @@ from collections import defaultdict
 
 from wordinserter.parsers.fixes import normalize_list_elements, correct_whitespace
 from . import BaseParser
-from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
-    CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
+from ..operations import Paragraph, Bold, Italic, UnderLine, Text, \
+    CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList, \
     NumberedList, ListElement, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
     LineBreak, Heading
 import bs4
@@ -13,45 +13,44 @@ import re
 
 _COLLAPSE_REGEX = re.compile(r'\s+')
 
+MAPPING = {
+    "p": Paragraph,
+    "b": Bold,
+    "strong": Bold,
+    "i": Italic,
+    "em": Italic,
+    "u": UnderLine,
+    "code": CodeBlock,
+    "pre": CodeBlock,
+    "div": Group,
+    "span": Span,
+
+    "h1": partial(Heading, level=1),
+    "h2": partial(Heading, level=2),
+    "h3": partial(Heading, level=3),
+    "h4": partial(Heading, level=4),
+
+    "ul": BulletList,
+    "ol": NumberedList,
+    "li": ListElement,
+
+    "img": Image,
+    "a": HyperLink,
+    "html": Group,
+
+    "table": Table,
+    "thead": TableHead,
+    "tbody": TableBody,
+    "tr": TableRow,
+    "td": TableCell,
+    "th": TableCell,
+
+    "footnote": Footnote,
+    "br": LineBreak
+}
+
 
 class HTMLParser(BaseParser):
-    def __init__(self):
-        self.mapping = {
-            "p": Paragraph,
-            "b": Bold,
-            "strong": Bold,
-            "i": Italic,
-            "em": Italic,
-            "u": UnderLine,
-            "code": CodeBlock,
-            "pre": CodeBlock,
-            "div": Group,
-            "span": Span,
-
-            "h1": partial(Heading, level=1),
-            "h2": partial(Heading, level=2),
-            "h3": partial(Heading, level=3),
-            "h4": partial(Heading, level=4),
-
-            "ul": BulletList,
-            "ol": NumberedList,
-            "li": ListElement,
-
-            "img": Image,
-            "a": HyperLink,
-            "html": Group,
-
-            "table": Table,
-            "thead": TableHead,
-            "tbody": TableBody,
-            "tr": TableRow,
-            "td": TableCell,
-            "th": TableCell,
-
-            "footnote": Footnote,
-            "br": LineBreak
-        }
-
     def parse(self, content, stylesheets=None):
         parser = bs4.BeautifulSoup(content, "lxml")
 
@@ -97,7 +96,7 @@ class HTMLParser(BaseParser):
         if isinstance(element, bs4.NavigableString):
             return Text(text=str(element))
 
-        cls = self.mapping.get(element.name, IgnoredOperation)
+        cls = MAPPING.get(element.name, IgnoredOperation)
 
         if cls is Image:
             if not element.attrs.get("src", None):
