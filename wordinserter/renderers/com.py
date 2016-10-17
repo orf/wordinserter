@@ -449,7 +449,7 @@ class COMRenderer(BaseRenderer):
 
             for row_child in op.children:
                 for cell_child in row_child.children:
-                    if cell_child.format.width is None:
+                    if cell_child.format.width is None or not cell_child.format.width.endswith("%"):
                         continue
 
                     try:
