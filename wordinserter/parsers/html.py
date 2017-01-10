@@ -124,11 +124,18 @@ class HTMLParser(BaseParser):
             cls = partial(CodeBlock, highlight=highlight, text=text)
         elif cls is NumberedList:
             type = element.attrs.get("type")
+            style_attr = element.attrs.get('style')
+            if style_attr:
+                style = cssutils.parseStyle(style_attr)
+                type = style.listStyleType
+
             values = {
                 "i": "roman-lowercase",
                 "I": "roman-uppercase",
-
+                'lower-roman': 'roman-lowercase',
+                'upper-roman': 'roman-uppercase',
             }
+
             cls = partial(NumberedList, type=values.get(type))
 
         instance = cls(attributes=element.attrs)
@@ -149,6 +156,13 @@ class HTMLParser(BaseParser):
         if instance.requires_children and not instance.children:
             return None
 
+        instance.format = self._build_format(element)
+        instance.set_source(element)
+
+
+        return instance
+
+    def _build_format(self, element):
         args = {}
 
         for attribute, value in element.attrs.items():
@@ -180,8 +194,5 @@ class HTMLParser(BaseParser):
 
                         if name in Format.optional:
                             args[name] = style.value.strip()
+        return Format(**args)
 
-        instance.format = Format(**args)
-        instance.set_source(element)
-
-        return instance
