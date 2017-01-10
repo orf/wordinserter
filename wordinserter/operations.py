@@ -258,7 +258,7 @@ class Format(Operation):
         "writing_mode",
         "width",
         "height",
-        "border"
+        "border",
     }
 
     FORMAT_ALIASES = {
