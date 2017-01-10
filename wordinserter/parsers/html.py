@@ -127,7 +127,7 @@ class HTMLParser(BaseParser):
             style_attr = element.attrs.get('style')
             if style_attr:
                 style = cssutils.parseStyle(style_attr)
-                type = style.listStyleType
+                type = style.listStyleType or type
 
             values = {
                 "i": "roman-lowercase",
