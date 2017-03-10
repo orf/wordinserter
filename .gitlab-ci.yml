@@ -1,0 +1,6 @@
+
+
+build:
+  image: python3
+  script:
+    - python setup.py develop
