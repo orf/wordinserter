@@ -30,10 +30,12 @@ class NewOperations(object):
 
 
 class BaseRenderer(abc.ABC):
-    def __init__(self, debug=False, hooks=None):
+    def __init__(self, debug=False, hooks=None, image_cache=None):
         self.debug = debug
         self.render_methods = {}
         self.hooks = hooks or {}
+
+        self.image_cache = image_cache or {}
 
         for name, method in inspect.getmembers(self, inspect.ismethod):
             if hasattr(method, "renders_operations"):

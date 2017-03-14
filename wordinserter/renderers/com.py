@@ -84,7 +84,7 @@ class WordFormatter(object):
 
 
 class COMRenderer(BaseRenderer):
-    def __init__(self, document, constants, range=None, debug=False, hooks=None):
+    def __init__(self, document, constants, range=None, debug=False, hooks=None, image_cache=None):
         self.word = document.Application
         self.document = document
         self.constants = constants
@@ -93,7 +93,7 @@ class COMRenderer(BaseRenderer):
         if range is not None:
             range.Select()
 
-        super().__init__(debug, hooks)
+        super().__init__(debug, hooks, image_cache)
 
     @property
     def selection(self):
@@ -230,7 +230,7 @@ class COMRenderer(BaseRenderer):
 
     @renders(Image)
     def image(self, op: Image):
-        location, height, width = op.get_image_path_and_dimensions()
+        location, height, width = op.get_image_path_and_dimensions(self.image_cache)
 
         rng = self.selection
 

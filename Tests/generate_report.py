@@ -13,7 +13,6 @@ if not os.path.exists("images"):
     os.mkdir("images")
 else:
     import shutil
-
     shutil.rmtree("images")
     os.mkdir("images")
 

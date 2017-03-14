@@ -316,13 +316,18 @@ class Image(ChildlessOperation):
         # Hard coded widths :'(
         return self.write_to_temp_file(not_found_image), 300, 220
 
-    def get_image_path_and_dimensions(self):
+    def get_image_path_and_dimensions(self, image_cache=None):
         if hasattr(self, "_path_cache"):
             return self._path_cache
 
         result = self.location
         original_height, original_width = self.height, self.width
         height, width = original_height, original_width
+
+        # If the image is in our dict then we convert the URL into a base64 one
+        if image_cache and result in image_cache:
+            result = "data:image/jpeg;base64," + image_cache[result]
+
         split = urlsplit(result)
 
         if split.scheme not in {"http", "https", "data"}:
