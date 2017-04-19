@@ -1,3 +1,6 @@
+## 0.9.4.5
+Fix headings not having bookmarks applied if they have an `id` attribute set.
+
 ## 0.9.4.4
 Fix Heading element not being correctly rendered, and fix cell table widths throwing an error if they are 
 pixel based but the parents are percentage based
