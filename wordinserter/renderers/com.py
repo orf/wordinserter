@@ -127,7 +127,7 @@ class COMRenderer(BaseRenderer):
     @renders(Heading)
     def heading(self, op: Heading):
 
-        with self.style(Style(name="Heading {0}".format(op.level), id=op.id)):
+        with self.style(Style(name="Heading {0}".format(op.level), attributes=op.original_attributes)):
             yield self.new_operations(op.children)
 
     @renders(Style)

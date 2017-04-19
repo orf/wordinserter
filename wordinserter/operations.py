@@ -40,6 +40,14 @@ class Operation(object):
                 if child.__class__.__name__ not in self.allowed_children:
                     raise RuntimeError("Child {0} is not allowed!".format(child.__class__.__name__))
 
+    @property
+    def original_attributes(self):
+        attrs = self.attributes.copy()
+        if self.id:
+            attrs['id'] = self.id
+
+        return attrs
+
     def set_source(self, source):
         self.source = source
 

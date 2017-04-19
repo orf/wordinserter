@@ -1,3 +1,6 @@
+## 0.9.4.6
+Actually fix headings not having bookmarks applied.
+
 ## 0.9.4.5
 Fix headings not having bookmarks applied if they have an `id` attribute set.
 
