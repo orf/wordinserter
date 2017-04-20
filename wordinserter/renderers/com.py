@@ -577,9 +577,15 @@ class COMRenderer(BaseRenderer):
                 if bg_color:
                     parent_operation.render.cell_object.Shading.BackgroundPatternColor = bg_color
             else:
-                bg_color = WordFormatter.style_to_highlight_wdcolor(background, self.constants)
-                if bg_color:
-                    element_range.HighlightColorIndex = bg_color
+                if op.display == 'block':
+                    # If it's a block element with a background then we set the Shading.BackgroundPatternColor
+                    bg_color = WordFormatter.style_to_wdcolor(background)
+                    if bg_color:
+                        element_range.Shading.BackgroundPatternColor = bg_color
+                else:
+                    bg_color = WordFormatter.style_to_highlight_wdcolor(background, self.constants)
+                    if bg_color:
+                        element_range.HighlightColorIndex = bg_color
 
         if op.vertical_align:
             if isinstance(parent_operation, TableCell):

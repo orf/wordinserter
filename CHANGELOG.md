@@ -1,3 +1,6 @@
+## 0.9.5
+Correctly support the background color in display: block elements.
+
 ## 0.9.4.6
 Actually fix headings not having bookmarks applied.
 

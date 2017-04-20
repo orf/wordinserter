@@ -267,6 +267,7 @@ class Format(Operation):
         "width",
         "height",
         "border",
+        "display"
     }
 
     FORMAT_ALIASES = {
