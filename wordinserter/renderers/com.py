@@ -73,12 +73,15 @@ class WordFormatter(object):
         :return: an integer point representation
         """
         if isinstance(css_value, str):
-            if css_value.endswith("px"):
+            if css_value.endswith("px") or css_value.endswith('pt'):
                 css_value = css_value[:-2]
-            elif css_value.endswith("pt"):
-                return round(float(css_value[:-2]))
 
-            css_value = round(float(css_value))
+            try:
+                css_value = float(css_value)
+            except ValueError:
+                return None
+
+            css_value = round(css_value)
 
         return css_value * 0.75
 
@@ -629,7 +632,11 @@ class COMRenderer(BaseRenderer):
                         img.Line.DashStyle = constants[style]
 
                 if op.border["width"]:
-                    img.Line.Weight = WordFormatter.size_to_points(op.border["width"])
+                    width = WordFormatter.size_to_points(op.border["width"])
+                    if width:
+                        img.Line.Weight = width
 
                 if op.border["color"]:
-                    img.Line.ForeColor.RGB = WordFormatter.style_to_wdcolor(op.border["color"])
+                    color = WordFormatter.style_to_wdcolor(op.border["color"])
+                    if color:
+                        img.Line.ForeColor.RGB = color

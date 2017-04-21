@@ -1,3 +1,6 @@
+## 0.9.5.1
+Support non-float CSS font-sizes
+
 ## 0.9.5
 Correctly support the background color in display: block elements.
 
