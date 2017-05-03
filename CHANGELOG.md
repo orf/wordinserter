@@ -1,3 +1,7 @@
+## 0.9.6
+Set the default parser to be 'html' in `wordinserter.render`. Also improve handling of elements with invalid children,
+so for example this markup correctly renders: `<h1><strong>Test</strong></h1>`
+
 ## 0.9.5.1
 Support non-float CSS font-sizes
 

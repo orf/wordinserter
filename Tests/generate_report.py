@@ -1,5 +1,5 @@
 import tempfile
-from comtypes.client import CreateObject
+
 from wordinserter import insert, parse
 from selenium import webdriver
 import pathlib
@@ -18,6 +18,10 @@ else:
     os.mkdir("images")
 
 image_directory = pathlib.Path("images")
+
+import comtypes.client
+#comtypes.client.gen_dir = None
+from comtypes.client import CreateObject
 
 word = CreateObject("Word.Application")
 word.Visible = False

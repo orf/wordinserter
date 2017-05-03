@@ -139,19 +139,16 @@ class HTMLParser(BaseParser):
             cls = partial(NumberedList, type=values.get(type))
 
         instance = cls(attributes=element.attrs)
-        children = list(element.childGenerator())
 
-        for idx, child in enumerate(children):
+        for idx, child in enumerate(element.children):
             item = self.build_element(child)
             if item is None:
                 continue
 
             if isinstance(item, IgnoredOperation):
                 instance.add_children(item.children)
-            elif not instance.is_child_allowed(item):
-                continue
             else:
-                instance.add_child(item)
+                self.recursively_add_children(instance, item)
 
         if instance.requires_children and not instance.children:
             return None
@@ -159,8 +156,16 @@ class HTMLParser(BaseParser):
         instance.format = self._build_format(element)
         instance.set_source(element)
 
-
         return instance
+
+    def recursively_add_children(self, parent, child):
+        # If the direct child is not allowed then we recurse through the childs children until we
+        # find a child we can add.
+        if not parent.is_child_allowed(child):
+            for child in child.children:
+                self.recursively_add_children(parent, child)
+        else:
+            parent.add_child(child)
 
     def _build_format(self, element):
         args = {}

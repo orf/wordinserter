@@ -15,7 +15,7 @@ renderers = {
 }
 
 
-def parse(text, parser=None, **kwargs):
+def parse(text, parser='html', **kwargs):
     """
     Parse some given input into a list of operations to perform
     :param text: Text input
