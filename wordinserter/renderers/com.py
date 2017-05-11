@@ -73,13 +73,18 @@ class WordFormatter(object):
         :return: an integer point representation
         """
         if isinstance(css_value, str):
-            if css_value.endswith("px") or css_value.endswith('pt'):
+            is_pt = css_value.endswith('pt')
+            if css_value.endswith("px") or is_pt:
                 css_value = css_value[:-2]
 
             try:
                 css_value = float(css_value)
             except ValueError:
                 return None
+
+            if is_pt:
+                # Return pt sizes directly, no rounding or multiplication.
+                return css_value
 
             css_value = round(css_value)
 
