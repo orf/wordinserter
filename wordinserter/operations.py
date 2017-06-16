@@ -111,7 +111,7 @@ class Operation(object):
 
     @property
     def has_children(self):
-        return len(self.children) > 0
+        return bool(self.children)
 
     def has_parent(self, parent_cls):
         return any(isinstance(p, parent_cls) for p in self.ancestors)
@@ -405,13 +405,24 @@ class Table(Operation):
         """
         Returns row, column counts
         """
-        if not self.children:
+        if not self.has_children:
             return 0, 0
 
         rows = len(self.children)
         columns = max(sum(child.colspan or 1 for child in row.children) for row in self.children)
 
         return rows, columns
+    
+    @property
+    def is_uniform(self):
+        if not self.has_children:
+            return False
+
+        if len(self.children) == 1:
+            return True
+
+        first_row = len(self.children[0].children)
+        return all(len(child.children) == first_row for child in self.children[1:])
 
 
 class TableHead(IgnoredOperation):

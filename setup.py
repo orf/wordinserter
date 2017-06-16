@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 import platform
 import warnings
 
-requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors', 'pygments', 'lxml']
+requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors',
+            'pygments', 'lxml', 'contexttimer', 'docopt']
 
 if platform.system() != "Windows":
     warnings.warn("wordinserter currently only supports Windows for generating documents,"
@@ -23,5 +24,10 @@ setup(
 Render HTML and Markdown into a word document using win32com.
 Check out the github repo for more information and code samples.
 """,
-    package_data={'wordinserter': ['images/*']}
+    package_data={'wordinserter': ['images/*']},
+    entry_points={
+        'console_scripts': [
+            'wordinserter=wordinserter.cli:run'
+        ]
+    }
 )
