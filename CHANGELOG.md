@@ -1,3 +1,7 @@
+## 0.9.7
+Add support for inserting cross references. Use <a href='!ref'>. If the reference does not exist yet you will need to
+select the whole document and call Fields.Update() before saving.
+
 ## 0.9.6.1
 Correctly handle 'pt' font-size CSS declarations. Since 0.9.5.1 they where incorrectly treated the same as 'px' values.
 

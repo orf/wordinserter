@@ -277,6 +277,15 @@ class COMRenderer(BaseRenderer):
 
         if op.location.startswith('#'):
             self.document.Hyperlinks.Add(Anchor=rng, TextToDisplay="", SubAddress=op.location.replace('#', '', 1))
+        elif op.location.startswith('!'):
+            field = self.document.Fields.Add(
+                Range=rng,
+                Type=self.constants.wdFieldEmpty,
+                Text="REF {} \h".format(op.location.replace('!', '', 1)),
+                PreserveFormatting=True
+            )
+            # When inserting fields, the cursor stays at the beginning, select it so it collapses to the end of it
+            field.Result.Select()
         else:
             self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
