@@ -1,7 +1,19 @@
-WordInserter
+Wordinserter
 ===
 This module allows you to insert HTML or MarkDown into a Word Document, as well as allowing you to programmatically build 
-word documents in pure Python (Python 3.x only at the moment). The API is really simple to use:
+word documents in pure Python (Python 3.x only at the moment). After running `pip install wordinserter` you can use the
+`wordinserter` CLI to quickly generate test documents:
+
+```bash
+# Download https://raw.githubusercontent.com/orf/wordinserter/master/Tests/docs/table_widths.html
+wordinserter table_widths.html --style="table { background-color: red }"
+```
+
+This should open Word and 
+
+API
+===
+The API is really simple to use:
 
 ``` python
 from wordinserter import parse, insert
