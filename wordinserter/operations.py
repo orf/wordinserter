@@ -423,6 +423,34 @@ class Table(Operation):
 
         first_row = len(self.children[0].children)
         return all(len(child.children) == first_row for child in self.children[1:])
+    
+    @property
+    def width(self):
+        if not self.format.width or not self.format.width.endswith('%'):
+            return
+
+        try:
+            return float(self.format.width[:-1])
+        except TypeError:
+            warnings.warn("Invalid table width {0}".format(self.format.width))
+
+    def update_child_widths(self):
+        if not self.is_uniform:
+            return
+
+        row_widths = [None] * self.dimensions[1]
+
+        for idx, _ in enumerate(row_widths):
+            for row in self.children:
+                child = row.children[idx]
+                child_width = child.width
+                if child_width is not None:
+                    row_widths[idx] = child.format.width
+                    break
+
+        for row in self.children:
+            for idx, cell in enumerate(row.children):
+                cell.format.width = row_widths[idx]
 
 
 class TableHead(IgnoredOperation):
@@ -439,6 +467,16 @@ class TableRow(Operation):
 
 class TableCell(Operation):
     optional = {"colspan", "rowspan"}
+
+    @property
+    def width(self):
+        if self.format.width is None or not self.format.width.endswith('%'):
+            return
+
+        try:
+            return float(self.format.width[:-1])
+        except TypeError:
+            warnings.warn("Invalid row width {0}".format(self.format.width))
 
 
 class Footnote(ChildlessOperation):

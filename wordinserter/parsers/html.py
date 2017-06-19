@@ -156,6 +156,9 @@ class HTMLParser(BaseParser):
         instance.format = self._build_format(element)
         instance.set_source(element)
 
+        if isinstance(instance, Table):
+            instance.update_child_widths()
+
         return instance
 
     def recursively_add_children(self, parent, child):

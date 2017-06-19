@@ -388,18 +388,16 @@ class COMRenderer(BaseRenderer):
 
         # This code is super super slow, running list() on a Cells collection takes >15 seconds.
         # https://github.com/enthought/comtypes/issues/107
-        """original_t1 = time.time()
+
+        # cell_mapping = [
+        #    list(row.Cells) for row in table.Rows
+        #    ]
+
+        # This code is faster, but not as nice :(
         cell_mapping = [
-            list(row.Cells) for row in table.Rows
-            ]
-        original_t2 = time.time() - original_t1"""
-
-        # This code is faster, but horrible :(
-        _rows = list(table.Rows)
-        cell_mapping = []
-
-        for row in _rows:
-            cell_mapping.append([row.Cells(i + 1) for i in range(len(row.Cells))])
+            [row.Cells(i + 1) for i in range(len(row.Cells))]
+            for row in list(table.Rows)
+        ]
 
         processed_cells = set()
 
@@ -459,24 +457,20 @@ class COMRenderer(BaseRenderer):
 
         op.render.table = table
 
-        if op.format.width and op.format.width.endswith("%"):
-            table_width = float(op.format.width[:-1])
+        table_width = op.width
+
+        if table_width:
             table.PreferredWidthType = self.constants.wdPreferredWidthPercent
             table.PreferredWidth = max(0, min(table_width, 100))
 
             for row_child in op.children:
                 for cell_child in row_child.children:
-                    if cell_child.format.width is None or not cell_child.format.width.endswith("%"):
-                        continue
+                    cell_width = cell_child.width
 
-                    try:
-                        cell_width = float(cell_child.format.width[:-1])
-                    except TypeError:
-                        raise RuntimeError("Invalid row width {0}".format(cell_child.format.width))
-
-                    cell_o = cell_child.render.cell_object
-                    cell_o.PreferredWidthType = self.constants.wdPreferredWidthPercent
-                    cell_o.PreferredWidth = cell_width
+                    if cell_width is not None:
+                        cell_o = cell_child.render.cell_object
+                        cell_o.PreferredWidthType = self.constants.wdPreferredWidthPercent
+                        cell_o.PreferredWidth = cell_width
 
             table.AllowAutoFit = False
 

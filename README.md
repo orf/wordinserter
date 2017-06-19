@@ -9,7 +9,7 @@ word documents in pure Python (Python 3.x only at the moment). After running `pi
 wordinserter table_widths.html --style="table { background-color: red }"
 ```
 
-This should open Word and 
+This should open Word and insert three tables, each of them styled with a red background.
 
 API
 ===
