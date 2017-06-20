@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from wordinserter.parsers.fixes import normalize_list_elements, correct_whitespace
+from wordinserter.parsers.fixes import normalize_list_elements, correct_whitespace, normalize_table_colspans
 from . import BaseParser
 from ..operations import Paragraph, Bold, Italic, UnderLine, Text, \
     CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList, \
@@ -87,6 +87,8 @@ class HTMLParser(BaseParser):
         tokens.set_parents()
         correct_whitespace(tokens)
 
+        normalize_table_colspans(tokens)
+
         return tokens
 
     def build_element(self, element):
@@ -155,10 +157,6 @@ class HTMLParser(BaseParser):
 
         instance.format = self._build_format(element)
         instance.set_source(element)
-
-        if isinstance(instance, Table):
-            instance.update_child_widths()
-
         return instance
 
     def recursively_add_children(self, parent, child):
@@ -202,5 +200,6 @@ class HTMLParser(BaseParser):
 
                         if name in Format.optional:
                             args[name] = style.value.strip()
+
         return Format(**args)
 

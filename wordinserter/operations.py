@@ -16,9 +16,13 @@ class Operation(object):
     allowed_children = set()
     requires_children = False
 
-    def __init__(self, children=None, **kwargs):
+    def __init__(self, *children, **kwargs):
         self.parent = None
-        self.children = children or []
+        # Handle a list of children being passed in
+        if len(children) == 1 and isinstance(children[0], list):
+            children = children[0]
+
+        self.children = list(children) or []
         self.args = []
         self.format = None
         self.attributes = kwargs.pop("attributes", {})
@@ -95,19 +99,29 @@ class Operation(object):
 
     @property
     def previous_sibling(self):
-        idx = self.parent.child_index(self)
-        if idx == 0:
-            return None
-
-        return self.parent[idx - 1]
+        left = self.left_siblings
+        return None if left is None else left[0]
 
     @property
     def next_sibling(self):
+        right = self.right_siblings
+        return None if right is None else right[0]
+
+    @property
+    def right_siblings(self):
         idx = self.parent.child_index(self)
         if idx == (len(self.parent) - 1):
             return None
 
-        return self.parent[idx + 1]
+        return self.parent[idx+1:]
+    
+    @property
+    def left_siblings(self):
+        idx = self.parent.child_index(self)
+        if idx == 0:
+            return None
+
+        return reversed(self.parent[:idx])
 
     @property
     def has_children(self):
@@ -156,8 +170,7 @@ class Operation(object):
 
 class ChildlessOperation(Operation):
     def __init__(self, **kwargs):
-        kwargs["children"] = []
-        super().__init__(**kwargs)
+        super().__init__([], **kwargs)
 
     def __repr__(self):
         return "<{0}>".format(self.__class__.__name__)
