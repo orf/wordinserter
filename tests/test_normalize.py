@@ -79,3 +79,16 @@ class TestNormalizeTable:
         table_colspans.normalize_table(eight_col_table)
 
         assert [c.colspan for c in invalid_row.children] == [3, 2, 2, 1]
+
+    def test_rowspan_invalid_end(self, eight_col_table: Table):
+        invalid_row = TableRow(
+            TableCell(colspan=3),
+            TableCell(colspan=1),
+            TableCell(colspan=3)
+        )
+
+        eight_col_table.add_child(invalid_row)
+
+        table_colspans.normalize_table(eight_col_table)
+
+        assert [c.colspan for c in invalid_row.children] == [3, 1, 4]

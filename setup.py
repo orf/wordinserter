@@ -8,11 +8,13 @@ requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors',
 if platform.system() != "Windows":
     warnings.warn("wordinserter currently only supports Windows for generating documents,"
                   " functionality will be impaired.")
+else:
+    requires.append('comtypes')
 
 
 setup(
     name='wordinserter',
-    version='0.9.7',
+    version='1.0',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',
