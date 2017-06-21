@@ -1,5 +1,12 @@
 Wordinserter
 ===
+
+[![Build Status](https://travis-ci.org/orf/wordinserter.svg?branch=master)](https://travis-ci.org/orf/wordinserter)
+[![](https://img.shields.io/pypi/v/wordinserter.svg)](https://pypi.python.org/pypi/wordinserter)
+[![](https://img.shields.io/pypi/l/wordinserter.svg)](https://pypi.python.org/pypi/wordinserter)
+[![](https://img.shields.io/pypi/format/wordinserter.svg)](https://pypi.python.org/pypi/wordinserter)
+
+
 This module allows you to insert HTML into a Word Document, as well as allowing you to programmatically build 
 word documents in pure Python (Python 3.x only at the moment). After running `pip install wordinserter` you can use the
 `wordinserter` CLI to quickly generate test documents:
