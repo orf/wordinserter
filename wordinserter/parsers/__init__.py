@@ -1,12 +1,8 @@
-import abc
-
-
 class ParseException(RuntimeError):
     pass
 
 
-class BaseParser(abc.ABC):
-    @abc.abstractmethod
+class BaseParser(object):
     def parse(self, content):
         raise NotImplementedError()
 

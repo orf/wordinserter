@@ -1,4 +1,3 @@
-import abc
 import inspect
 
 import sys
@@ -29,7 +28,7 @@ class NewOperations(object):
         self.ops = ops
 
 
-class BaseRenderer(abc.ABC):
+class BaseRenderer(object):
     def __init__(self, debug=False, hooks=None):
         self.debug = debug
         self.render_methods = {}
