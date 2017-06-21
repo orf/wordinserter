@@ -10,12 +10,6 @@ def normalize_table_colspans(tokens):
             normalize_table_colspans(token.children)
 
 
-def set_table_colspan(table, value):
-    for row in table.children:
-        for cell in row.children:
-            cell.colspan = value
-
-
 def normalize_table(table: Table):
     max_table_cells = max(len(row.children) for row in table.children)
     for row in table.children:
@@ -26,5 +20,7 @@ def normalize_table(table: Table):
             child_wants_colspan = child.colspan
             if child_wants_colspan >= colspan_left:
                 child.colspan = colspan_left - len(children_with_colspan[idx+1:])
+            elif child == children_with_colspan[-1]:
+                child.colspan = colspan_left
 
             colspan_left -= child.colspan

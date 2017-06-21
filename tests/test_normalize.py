@@ -3,92 +3,29 @@ from wordinserter.parsers.fixes import table_colspans
 import pytest
 
 
-@pytest.fixture
-def four_col_table():
-    return Table(
-        TableRow(
-            [TableCell(colspan=1) for _ in range(4)]
-        )
-    )
-
-
-@pytest.fixture
-def eight_col_table():
-    return Table(
-        TableRow(
-            [TableCell(colspan=1) for _ in range(8)]
-        )
-    )
-
-
 class TestNormalizeTable:
-    def test_rowspan_invalid_one(self, four_col_table: Table):
-        invalid_row = TableRow(
-                TableCell(colspan=4),
-                TableCell(colspan=1),
-                TableCell(colspan=2)
-            )
+    # Lists of (table_length, given, expected) table colspans
+    TABLES = [
+        (8, (5, 1, 3), (5, 1, 2)),  # Reduce last column by 1
+        (8, (3, 1, 4, 4), (3, 1, 3, 1)),  # Reduce 3rd column by one, last column to 1
+        (8, (3, 2, 4, 4), (3, 2, 2, 1)),  # Reduce 2nd column, third and fourth
+        (8, (3, 1, 3), (3, 1, 4)),  # Expand fourth column,
+        *[(i, (8,), (i,)) for i in range(1, 7)]  # Reduce single column colspans to single values
+    ]
 
-        four_col_table.add_child(invalid_row)
-
-        table_colspans.normalize_table(four_col_table)
-
-        assert [c.colspan for c in invalid_row.children] == [2, 1, 1]
-
-    def test_rowspan_invalid_two(self, eight_col_table: Table):
-        invalid_row = TableRow(
-            TableCell(colspan=5),
-            TableCell(colspan=1),
-            TableCell(colspan=3)
+    @pytest.mark.parametrize('table_length, given_spans,expected_spans', TABLES)
+    def test_normalize_rowspans(self, table_length, given_spans, expected_spans):
+        given_row = TableRow(
+            *(TableCell(colspan=span) for span in given_spans)
         )
 
-        eight_col_table.add_child(invalid_row)
-
-        table_colspans.normalize_table(eight_col_table)
-
-        assert [c.colspan for c in invalid_row.children] == [5, 1, 2]
-
-        assert invalid_row.children[0].colspan == 5
-        assert invalid_row.children[1].colspan == 1
-        assert invalid_row.children[2].colspan == 2
-
-    def test_rowspan_invalid_three(self, eight_col_table: Table):
-        invalid_row = TableRow(
-            TableCell(colspan=3),
-            TableCell(colspan=1),
-            TableCell(colspan=4),
-            TableCell(colspan=4)
+        eight_column_table = Table(
+            TableRow(
+                [TableCell(colspan=1) for _ in range(table_length)]
+            ),
+            given_row
         )
 
-        eight_col_table.add_child(invalid_row)
+        table_colspans.normalize_table(eight_column_table)
 
-        table_colspans.normalize_table(eight_col_table)
-
-        assert [c.colspan for c in invalid_row.children] == [3, 1, 3, 1]
-
-    def test_rowspan_invalid_four(self, eight_col_table: Table):
-        invalid_row = TableRow(
-            TableCell(colspan=3),
-            TableCell(colspan=2),
-            TableCell(colspan=4),
-            TableCell(colspan=4)
-        )
-
-        eight_col_table.add_child(invalid_row)
-
-        table_colspans.normalize_table(eight_col_table)
-
-        assert [c.colspan for c in invalid_row.children] == [3, 2, 2, 1]
-
-    def test_rowspan_invalid_end(self, eight_col_table: Table):
-        invalid_row = TableRow(
-            TableCell(colspan=3),
-            TableCell(colspan=1),
-            TableCell(colspan=3)
-        )
-
-        eight_col_table.add_child(invalid_row)
-
-        table_colspans.normalize_table(eight_col_table)
-
-        assert [c.colspan for c in invalid_row.children] == [3, 1, 4]
+        assert tuple(c.colspan for c in given_row.children) == expected_spans
