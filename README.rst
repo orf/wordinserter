@@ -11,7 +11,7 @@ quickly generate test documents:
 
 .. code:: bash
 
-    # Download https://raw.githubusercontent.com/orf/wordinserter/master/Tests/docs/table_widths.html
+    # Download https://raw.githubusercontent.com/orf/wordinserter/master/tests/docs/table_widths.html
     wordinserter table_widths.html --style="table { background-color: red }"
 
 This should open Word and insert three tables, each of them styled with
@@ -197,5 +197,5 @@ list-types on a single level. i.e this HTML will render incorrectly:
    :target: https://pypi.python.org/pypi/wordinserter
 .. |image3| image:: https://img.shields.io/pypi/format/wordinserter.svg
    :target: https://pypi.python.org/pypi/wordinserter
-.. |image4| image:: https://img.shields.io/pypi/pyversions/Django.svg
+.. |image4| image:: https://img.shields.io/pypi/pyversions/wordinserter.svg
    :target: https://pypi.python.org/pypi/wordinserter
