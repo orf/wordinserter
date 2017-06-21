@@ -1,3 +1,4 @@
 def test_parse_doc(html_parser, html_document):
-    html_parser.parse(html_document.read_text())
+    with html_document.open() as fd:
+        html_parser.parse(fd.read())
 
