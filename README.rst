@@ -1,7 +1,7 @@
 Wordinserter
 ============
 
-|Build Status| |image1| |image2| |image3|
+|Build Status| |image1| |image2| |image3| |image4|
 
 This module allows you to insert HTML into a Word Document, as well as
 allowing you to programmatically build word documents in pure Python
@@ -196,4 +196,6 @@ list-types on a single level. i.e this HTML will render incorrectly:
 .. |image2| image:: https://img.shields.io/pypi/l/wordinserter.svg
    :target: https://pypi.python.org/pypi/wordinserter
 .. |image3| image:: https://img.shields.io/pypi/format/wordinserter.svg
+   :target: https://pypi.python.org/pypi/wordinserter
+.. |image4| image:: https://img.shields.io/pypi/pyversions/Django.svg
    :target: https://pypi.python.org/pypi/wordinserter
