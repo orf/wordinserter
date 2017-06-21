@@ -142,7 +142,9 @@ class Operation(object):
     def descendants(self):
         for child in self.children:
             yield child
-            yield from child.descendants
+            # yield from is better, but Py3 only :(
+            for descendant_child in child.descendants:
+                yield descendant_child
 
     def __repr__(self):
         if len(self.children) == 1:
