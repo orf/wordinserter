@@ -11,9 +11,11 @@ wordinserter table_widths.html --style="table { background-color: red }"
 
 This should open Word and insert three tables, each of them styled with a red background.
 
-This library currently supports many features, all through HTML:
-
-   - All standard styles (italics, bold, underlined) through HTML tags
+The library is stable and has been used to generate tens of thousands of reports, and currently supports many
+features (all controlled through HTML):
+    
+   - Common tags, including tables, lists, code blocks, images, hyperlinks, footnotes, headers, 
+     paragraphs, styles (`b` `i` `em`)
    - Named bookmarks in documents via element `id` attributes
    - A subset of CSS for elements, with more that can be easily added as needed
    - Including document-wide stylesheets while adding elements
@@ -22,6 +24,7 @@ This library currently supports many features, all through HTML:
    - Arbitrarily nested lists of differing types (bullet, numbered, roman numerals)
    - Hyperlinks to bookmarks within the document using classic links or using Word 'fields'
    - Images, with support for footnotes, 404 and embedded base64 data-uri images
+   - Basic whitespace handling
     
 There is a [comparison document](https://rawgit.com/orf/wordinserter/master/tests/comparison/report.html) showing 
 the output of WordInserter against Chrome, check it out to see what the library can do.
