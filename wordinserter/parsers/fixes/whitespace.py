@@ -1,5 +1,6 @@
-from wordinserter.operations import Text, Operation, CodeBlock, Paragraph
 import re
+
+from wordinserter.operations import CodeBlock, Operation, Paragraph, Text
 
 _COLLAPSE_REGEX = re.compile(r'\s+')
 

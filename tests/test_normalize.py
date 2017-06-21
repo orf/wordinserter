@@ -1,6 +1,7 @@
-from wordinserter.operations import Table, TableRow, TableCell
-from wordinserter.parsers.fixes import table_colspans
 import pytest
+
+from wordinserter.operations import Table, TableCell, TableRow
+from wordinserter.parsers.fixes import table_colspans
 
 
 class TestNormalizeTable:

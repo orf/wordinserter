@@ -1,6 +1,8 @@
-import pytest
-from wordinserter import parsers
 import pathlib
+
+import pytest
+
+from wordinserter import parsers
 
 docs = pathlib.Path(__file__).parent / 'docs'
 

@@ -1,9 +1,9 @@
 from . import BaseParser, ParseException
-
-from ..operations import Paragraph, Bold, Italic, UnderLine, Text,\
-    CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList,\
-    NumberedList, ListElement, BaseList, Table, TableRow, TableCell, TableHead, Format, InlineCode
-
+from ..operations import (BaseList, Bold, BulletList, CodeBlock, Format, Group,
+                          HyperLink, IgnoredOperation, Image, InlineCode,
+                          Italic, ListElement, NumberedList, Paragraph, Style,
+                          Table, TableCell, TableHead, TableRow, Text,
+                          UnderLine)
 from .html import HTMLParser
 
 

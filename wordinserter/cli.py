@@ -12,13 +12,15 @@ Options:
     --hidden            Hide the Word window while rendering
 """
 
-from wordinserter import parse, insert
 import pathlib
 import sys
+import tempfile
+
 from contexttimer import Timer
 from docopt import docopt
-import tempfile
+
 from comtypes.client import CreateObject
+from wordinserter import insert, parse
 
 
 def get_file_contents(path):

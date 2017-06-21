@@ -1,10 +1,11 @@
 import pathlib
 import shutil
-import sys
-from selenium import webdriver
 import subprocess
-from wand.image import Image
+import sys
+
+from selenium import webdriver
 from wand.color import Color
+from wand.image import Image
 
 image_directory = pathlib.Path("images")
 

@@ -1,9 +1,13 @@
-from . import BaseRenderer, renders
-from ..operations import Text, Bold, Italic, UnderLine, Paragraph, LineBreak, CodeBlock, Style, Image, HyperLink, \
-    BulletList, NumberedList, ListElement, BaseList, Table, TableCell, TableRow, Format, \
-    InlineCode, Footnote, Span, Group, Heading
 import warnings
+
 import webcolors
+
+from . import BaseRenderer, renders
+from ..operations import (BaseList, Bold, BulletList, CodeBlock, Footnote,
+                          Format, Group, Heading, HyperLink, Image, InlineCode,
+                          Italic, LineBreak, ListElement, NumberedList,
+                          Paragraph, Span, Style, Table, TableCell, TableRow,
+                          Text, UnderLine)
 
 WORD_WDCOLORINDEX_MAPPING = {
     'lightgreen': 'wdBrightGreen',

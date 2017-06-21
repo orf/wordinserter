@@ -1,15 +1,20 @@
-from collections import defaultdict
-
-from wordinserter.parsers.fixes import normalize_list_elements, correct_whitespace, normalize_table_colspans
-from . import BaseParser
-from ..operations import Paragraph, Bold, Italic, UnderLine, Text, \
-    CodeBlock, Group, IgnoredOperation, Style, Image, HyperLink, BulletList, \
-    NumberedList, ListElement, Table, TableRow, TableCell, TableHead, TableBody, Format, Footnote, Span, \
-    LineBreak, Heading
-import bs4
-from functools import partial
-import cssutils
 import re
+from collections import defaultdict
+from functools import partial
+
+import bs4
+import cssutils
+
+from wordinserter.parsers.fixes import (correct_whitespace,
+                                        normalize_list_elements,
+                                        normalize_table_colspans)
+
+from . import BaseParser
+from ..operations import (Bold, BulletList, CodeBlock, Footnote, Format, Group,
+                          Heading, HyperLink, IgnoredOperation, Image, Italic,
+                          LineBreak, ListElement, NumberedList, Paragraph,
+                          Span, Style, Table, TableBody, TableCell, TableHead,
+                          TableRow, Text, UnderLine)
 
 _COLLAPSE_REGEX = re.compile(r'\s+')
 
@@ -202,4 +207,3 @@ class HTMLParser(BaseParser):
                             args[name] = style.value.strip()
 
         return Format(**args)
-

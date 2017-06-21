@@ -1,7 +1,8 @@
-from setuptools import setup, find_packages
+import os
 import platform
 import warnings
-import os
+
+from setuptools import find_packages, setup
 
 requires = ["BeautifulSoup4", "cssutils", 'requests', 'webcolors',
             'pygments', 'lxml', 'contexttimer', 'docopt']

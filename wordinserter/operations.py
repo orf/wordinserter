@@ -1,9 +1,9 @@
 import codecs
+import tempfile
 import warnings
+from urllib.parse import urlsplit
 
 import requests
-import tempfile
-from urllib.parse import urlsplit
 
 
 class RenderData(object):

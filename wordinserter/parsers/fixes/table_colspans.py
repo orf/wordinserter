@@ -29,4 +29,3 @@ def normalize_table(table: Table):
                 child.colspan = colspan_left
 
             colspan_left -= child.colspan
-

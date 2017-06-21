@@ -1,4 +1,4 @@
-from wordinserter.operations import Text, ChildlessOperation
+from wordinserter.operations import ChildlessOperation, Text
 
 
 class _NotFound(object):
