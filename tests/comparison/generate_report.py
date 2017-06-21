@@ -23,7 +23,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 1:
         file_names = [pathlib.Path(p) for p in sys.argv[1:]]
     else:
-        file_names = list(pathlib.Path("docs").iterdir())
+        file_names = list(pathlib.Path("../docs").iterdir())
 
     browser = webdriver.Chrome()
 

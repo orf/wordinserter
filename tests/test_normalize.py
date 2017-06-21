@@ -16,12 +16,12 @@ class TestNormalizeTable:
     @pytest.mark.parametrize('table_length, given_spans,expected_spans', TABLES)
     def test_normalize_rowspans(self, table_length, given_spans, expected_spans):
         given_row = TableRow(
-            *(TableCell(colspan=span) for span in given_spans)
+            *(TableCell(colspan=span, rowspan=1) for span in given_spans)
         )
 
         eight_column_table = Table(
             TableRow(
-                [TableCell(colspan=1) for _ in range(table_length)]
+                [TableCell(colspan=1, rowspan=1) for _ in range(table_length)]
             ),
             given_row
         )

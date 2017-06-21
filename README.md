@@ -1,6 +1,6 @@
 Wordinserter
 ===
-This module allows you to insert HTML or MarkDown into a Word Document, as well as allowing you to programmatically build 
+This module allows you to insert HTML into a Word Document, as well as allowing you to programmatically build 
 word documents in pure Python (Python 3.x only at the moment). After running `pip install wordinserter` you can use the
 `wordinserter` CLI to quickly generate test documents:
 
@@ -11,6 +11,21 @@ wordinserter table_widths.html --style="table { background-color: red }"
 
 This should open Word and insert three tables, each of them styled with a red background.
 
+This library currently supports many features, all through HTML:
+
+   - All standard styles (italics, bold, underlined) through HTML tags
+   - Named bookmarks in documents via element `id` attributes
+   - A subset of CSS for elements, with more that can be easily added as needed
+   - Including document-wide stylesheets while adding elements
+   - In-built syntax highlighting for `<pre>` and `<code>` blocks
+   - Supports complex merged tables, with rowspans and colspans
+   - Arbitrarily nested lists of differing types (bullet, numbered, roman numerals)
+   - Hyperlinks to bookmarks within the document using classic links or using Word 'fields'
+   - Images, with support for footnotes, 404 and embedded base64 data-uri images
+    
+There is a [comparison document](https://rawgit.com/orf/wordinserter/master/tests/comparison/report.html) showing 
+the output of WordInserter against Chrome, check it out to see what the library can do.
+
 API
 ===
 The API is really simple to use:
@@ -18,16 +33,13 @@ The API is really simple to use:
 ``` python
 from wordinserter import parse, insert
 
-operations = parse(html, parser="html") # or parser="markdown"
+operations = parse(html, parser="html")
 insert(operations, document=document, constants=constants)
 ```
     
-Inserting HTML or Markdown into a Word document is a two step process: first the input has to be parsed into a sequence 
+Inserting HTML into a Word document is a two step process: first the input has to be parsed into a sequence 
 of operations, which is then *inserted* into a Word document. This library currently only supports inserting using the 
 Word COM interface which means it is Windows specific at the moment.
-
-There is a [comparison document](https://rawgit.com/orf/wordinserter/master/Tests/report.html) showing the output of 
-WordInserter against Firefox, check it out to see what the library can do.
 
 Below is a more complex example including starting word that will insert a representation of the HTML code
 into the new word document, including the image, caption and list.
@@ -51,18 +63,7 @@ html = """
 </ul>
 """
 
-markdown = """
-### This is a title
-
-![I go below the image as a caption](http://placehold.it/150x150)
-
-*This is **some** text* in a [paragraph](http://google.com)
-
-  * Boo! I'm a **list**
-"""
-
 # Parse the HTML into a list of operations then feed them into insert.
-# The Markdown can be parsed by using parser="markdown"
 operations = parse(html, parser="html")
 insert(operations, document=document, constants=constants)
 ```
