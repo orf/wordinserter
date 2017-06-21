@@ -100,7 +100,7 @@ you need to mix different constant groups you can use the
 
 .. code:: python
 
-    from wordinserter import CombinedConstants
+    from wordinserter.utils import CombinedConstants
     from comtypes.gen import Word as word_constants
     from comtypes.gen import Office as office_constants
 
