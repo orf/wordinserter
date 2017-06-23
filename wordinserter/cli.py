@@ -15,7 +15,10 @@ Options:
 import pathlib
 import sys
 import tempfile
+import inspect
+import os
 
+from comtypes import gen
 from contexttimer import Timer
 from docopt import docopt
 
@@ -106,7 +109,18 @@ def run():
     print('Parsed in {0:f} ms'.format(t.elapsed))
 
     with Timer(factor=1000) as t:
-        word = CreateObject("Word.Application")
+        try:
+            word = CreateObject("Word.Application")
+        except AttributeError as e:
+            gen_dir = inspect.getsourcefile(gen)
+
+            print('****** There was an error opening word ******')
+            print('This is a transient error that sometimes happens.')
+            print('Remove all files (except __init__.py) from here:')
+            print(os.path.dirname(gen_dir))
+            print('Then retry the program')
+            print('*********************************************')
+            raise e
         doc = word.Documents.Add()
 
     print('Opened word in {0:f} ms'.format(t.elapsed))

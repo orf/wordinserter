@@ -487,11 +487,19 @@ class COMRenderer(BaseRenderer):
         yield
 
     @renders(TableCell)
-    def table_cell(self, op):
+    def table_cell(self, op: TableCell):
         rng = op.render.cell_object.Range
         rng.Collapse()
         rng.Select()
         yield
+
+        if op.orientation:
+            mapping = {
+                'sideways-lr': 'wdTextOrientationUpward',
+                'sideways-rl': 'wdTextOrientationDownward',
+            }
+            if op.orientation in mapping:
+                op.render.cell_object.Range.Orientation = getattr(self.constants, mapping[op.orientation])
 
     def _apply_style_to_range(self, op, rng=None):
         rng = rng or self.selection.Range

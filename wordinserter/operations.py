@@ -479,7 +479,7 @@ class TableRow(Operation):
 
 
 class TableCell(Operation):
-    optional = {"colspan", "rowspan"}
+    optional = {"colspan", "rowspan", "orientation"}
 
     @property
     def width(self):

@@ -1,3 +1,6 @@
+## 1.0.3
+Add support for table cell text orientations through the css `writing-mode` property
+
 ## 1.0.0
 Add support for inserting cross references. Use `<a href='!ref'>`. If the reference does not exist yet you will need to
 select the whole document and call Fields.Update() before saving.

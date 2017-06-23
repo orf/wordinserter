@@ -105,6 +105,12 @@ class HTMLParser(BaseParser):
 
         cls = MAPPING.get(element.name, IgnoredOperation)
 
+        style_attr = element.attrs.get('style')
+        if style_attr:
+            element_style = cssutils.parseStyle(style_attr)
+        else:
+            element_style = None
+
         if cls is Image:
             if not element.attrs.get("src", None):
                 cls = IgnoredOperation
@@ -120,9 +126,14 @@ class HTMLParser(BaseParser):
             else:
                 cls = partial(HyperLink, location=element.attrs["href"])
         elif cls is TableCell:
+            orientation = None
+            if element_style and 'writing-mode' in element_style:
+                orientation = element_style['writing-mode']
+
             cls = partial(TableCell,
                           colspan=int(element.attrs.get("colspan", 1)),
-                          rowspan=int(element.attrs.get("rowspan", 1)))
+                          rowspan=int(element.attrs.get("rowspan", 1)),
+                          orientation=orientation)
         elif cls is Table:
             cls = partial(Table, border=element.attrs.get("border", "1"))
         elif cls is CodeBlock:
@@ -130,11 +141,9 @@ class HTMLParser(BaseParser):
             text = element.getText()
             cls = partial(CodeBlock, highlight=highlight, text=text)
         elif cls is NumberedList:
-            type = element.attrs.get("type")
-            style_attr = element.attrs.get('style')
-            if style_attr:
-                style = cssutils.parseStyle(style_attr)
-                type = style.listStyleType or type
+            list_type = element.attrs.get("type")
+            if element_style:
+                list_type = element_style.listStyleType or list_type
 
             values = {
                 "i": "roman-lowercase",
@@ -143,7 +152,7 @@ class HTMLParser(BaseParser):
                 'upper-roman': 'roman-uppercase',
             }
 
-            cls = partial(NumberedList, type=values.get(type))
+            cls = partial(NumberedList, type=values.get(list_type))
 
         instance = cls(attributes=element.attrs)
 
@@ -160,7 +169,7 @@ class HTMLParser(BaseParser):
         if instance.requires_children and not instance.children:
             return None
 
-        instance.format = self._build_format(element)
+        instance.format = self._build_format(element, element_style)
         instance.set_source(element)
         return instance
 
@@ -173,37 +182,36 @@ class HTMLParser(BaseParser):
         else:
             parent.add_child(child)
 
-    def _build_format(self, element):
+    def _build_format(self, element, style):
         args = {}
 
-        for attribute, value in element.attrs.items():
-            if attribute == "class" and value:
-                # This selects the first one which isn't an empty string. We could handle multiple classes here somehow.
-                vals = [v for v in value if v]
-                if vals:
-                    args["style"] = vals
-            elif attribute == "style":
-                styles = cssutils.parseStyle(value)
+        if 'class' in element.attrs:
+            vals = [v for v in element.attrs['class'] if v]
+            if vals:
+                args["style"] = vals
 
-                for name in Format.NESTED_STYLES:
-                    args[name] = defaultdict(str)
+        if style:
+            for name in Format.NESTED_STYLES:
+                args[name] = defaultdict(str)
 
-                for style in styles:
-                    for nested_name in Format.NESTED_STYLES:
-                        nested_name_with_dash = nested_name + "-"
-                        if style.name.startswith(nested_name_with_dash):
-                            args[nested_name][style.name.replace(nested_name_with_dash, "")] = style.value
-                            break
-                    else:
-                        name = style.name.lower().replace("-", "_")
-                        if name in Format.NESTED_STYLES:
-                            # Not supported. Use explicit 'margin-right',
-                            # 'margin-left' etc rather than just 'margin'.
-                            continue
-                        elif name in Format.FORMAT_ALIASES:
-                            name = Format.FORMAT_ALIASES[name]
+            for style in style:
+                for nested_name in Format.NESTED_STYLES:
+                    nested_name_with_dash = nested_name + "-"
+                    if style.name.startswith(nested_name_with_dash):
+                        args[nested_name][style.name.replace(nested_name_with_dash, "")] = style.value
+                        break
+                else:
+                    name = style.name.lower().replace("-", "_")
+                    if name in Format.NESTED_STYLES:
+                        # Not supported. Use explicit 'margin-right',
+                        # 'margin-left' etc rather than just 'margin'.
+                        continue
+                    elif name in Format.FORMAT_ALIASES:
+                        name = Format.FORMAT_ALIASES[name]
 
-                        if name in Format.optional:
-                            args[name] = style.value.strip()
+                    if name in Format.optional:
+                        args[name] = style.value.strip()
+
+
 
         return Format(**args)
