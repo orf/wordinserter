@@ -494,6 +494,7 @@ class COMRenderer(BaseRenderer):
         yield
 
         if op.orientation:
+            # ToDo: Move this to the Format handling. It is specific to a table cell though
             mapping = {
                 'sideways-lr': 'wdTextOrientationUpward',
                 'sideways-rl': 'wdTextOrientationDownward',
@@ -621,14 +622,17 @@ class COMRenderer(BaseRenderer):
                     parent_operation.render.cell_object.VerticalAlignment = alignment[op.vertical_align]
 
         if op.text_align:
-            if isinstance(parent_operation, TableCell):
-                alignment = {
-                    'center': self.constants.wdAlignParagraphCenter,
-                    'left': self.constants.wdAlignParagraphLeft,
-                    'right': self.constants.wdAlignParagraphRight
-                }
-                if op.text_align in alignment:
+            alignment = {
+                'center': self.constants.wdAlignParagraphCenter,
+                'left': self.constants.wdAlignParagraphLeft,
+                'right': self.constants.wdAlignParagraphRight
+            }
+
+            if op.text_align in alignment:
+                if isinstance(parent_operation, TableCell):
                     parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.text_align]
+                elif isinstance(parent_operation, Paragraph):
+                    element_range.ParagraphFormat.Alignment = alignment[op.text_align]
 
         if op.writing_mode:
             orientations = {"vertical-lr": 1, "sideways-lr": 2}

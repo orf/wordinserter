@@ -1,3 +1,6 @@
+## 1.0.4
+Add support for text-alignment in paragraphs.
+
 ## 1.0.3
 Add support for table cell text orientations through the css `writing-mode` property
 

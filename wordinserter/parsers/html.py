@@ -212,6 +212,4 @@ class HTMLParser(BaseParser):
                     if name in Format.optional:
                         args[name] = style.value.strip()
 
-
-
         return Format(**args)
