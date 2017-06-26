@@ -1,24 +1,29 @@
 import pathlib
-import shutil
 import subprocess
 import sys
+import tempfile
+import dhash
 
 from selenium import webdriver
-from wand.color import Color
 from wand.image import Image
 
 image_directory = pathlib.Path("images")
-
-if image_directory.exists():
-    shutil.rmtree(str(image_directory))
 
 # If the directory is open in explorer it won't be removed.
 if not image_directory.exists():
     image_directory.mkdir()
 
+temp_directory = pathlib.Path(tempfile.mkdtemp())
 
 # [(file name, word image, html image)]
 results = []
+
+
+def is_same_image(img1, img2):
+    current_hash = dhash.dhash_int(img1)
+    old_hash = dhash.dhash_int(img2)
+    return dhash.get_num_bits_different(current_hash, old_hash) == 0
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 1:
@@ -35,20 +40,41 @@ if __name__ == "__main__":
             print('- Handling {0}'.format(file.absolute()))
 
             word_save = image_directory / (file.name + '.png')
-            browser_save = image_directory / (file.name + '.html.png')
+            word_save_temp = temp_directory / (file.name + '.png')
 
-            subprocess.call(['wordinserter', str(file), '--close', '--save={save}'.format(save=word_save)])
+            browser_save = image_directory / (file.name + '.html.png')
+            browser_save_temp = temp_directory / (file.name + '.html.png')
+
+            subprocess.call(['wordinserter', str(file), '--close', '--save={save}'.format(save=word_save_temp)])
+
+            if word_save.exists():
+                with Image(filename=str(word_save)) as current_word_image,\
+                            Image(filename=str(word_save_temp)) as new_word_img:
+                    if not is_same_image(current_word_image, new_word_img):
+                        word_save.write_bytes(word_save_temp.read_bytes())
+                    else:
+                        print('{0} and {1} are the same, not overwriting'.format(word_save, word_save_temp))
+            else:
+                word_save.write_bytes(word_save_temp.read_bytes())
 
             browser.get('file://{0}'.format(file.absolute()))
             browser.execute_script("document.body.style.margin = '0px'")
             browser.execute_script("document.body.style.padding = '10px'")
             browser.execute_script("document.body.style.display = 'inline-block'")
             body_size = browser.find_element_by_tag_name('body').size
-            browser.save_screenshot(str(browser_save))
+            browser.save_screenshot(str(browser_save_temp))
 
-            with Image(filename=str(browser_save)) as browser_img:
-                browser_img.crop(**body_size)
-                browser_img.save(filename=str(browser_save))
+            with Image(filename=str(browser_save_temp)) as new_browser_img:
+                new_browser_img.crop(**body_size)
+
+                if browser_save.exists():
+                    with Image(filename=str(browser_save)) as current_img:
+                        if not is_same_image(current_img, new_browser_img):
+                            new_browser_img.save(filename=str(browser_save))
+                        else:
+                            print('{0} and {1} are the same, not overwriting'.format(browser_save, browser_save_temp))
+                else:
+                    new_browser_img.save(filename=str(browser_save))
 
             results.append((file.name, word_save, browser_save))
 

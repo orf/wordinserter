@@ -281,11 +281,20 @@ class COMRenderer(BaseRenderer):
 
         if op.location.startswith('#'):
             self.document.Hyperlinks.Add(Anchor=rng, TextToDisplay="", SubAddress=op.location.replace('#', '', 1))
-        elif op.location.startswith('!'):
+        elif op.location.startswith('!') or op.location.startswith('@'):
+            if op.location.startswith('!'):
+                text = "REF {} \h".format(op.location.replace('!', '', 1))
+            else:
+                text = op.location.replace('@', '', 1)
+                code = text.split(' ')[0]
+                # Whitelist document codes.
+                if code not in {'FILENAME'}:
+                    return
+
             field = self.document.Fields.Add(
                 Range=rng,
                 Type=self.constants.wdFieldEmpty,
-                Text="REF {} \h".format(op.location.replace('!', '', 1)),
+                Text=text,
                 PreserveFormatting=True
             )
             # When inserting fields, the cursor stays at the beginning, select it so it collapses to the end of it

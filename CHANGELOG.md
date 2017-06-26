@@ -1,3 +1,6 @@
+## 1.0.5
+Add support for more word fields in hyperlinks. The syntax is `<a href='@CODE'>`. Currently only `FILENAME` is supported
+
 ## 1.0.4
 Add support for text-alignment in paragraphs.
 
