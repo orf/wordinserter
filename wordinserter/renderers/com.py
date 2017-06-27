@@ -138,7 +138,6 @@ class COMRenderer(BaseRenderer):
 
     @renders(Heading)
     def heading(self, op: Heading):
-
         with self.style(Style(name="Heading {0}".format(op.level), attributes=op.original_attributes)):
             yield self.new_operations(op.children)
 
@@ -154,9 +153,6 @@ class COMRenderer(BaseRenderer):
         if op.id:
             # Insert a bookmark
             self.document.Bookmarks.Add(str(op.id), self.range(start, end))
-
-            # self.selection.Collapse(Direction=constants.wdCollapseEnd)
-            # self.selection.Style = old_style
 
     @renders(Bold)
     def bold(self, op: Bold):
