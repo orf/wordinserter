@@ -575,6 +575,9 @@ class COMRenderer(BaseRenderer):
         # if should_type_x:
         #    self.selection.TypeText("X")
 
+        if isinstance(parent_operation, TableCell):
+            element_range = parent_operation.render.cell_object.Range
+
         if op.style and not isinstance(parent_operation, BaseList):
             self._apply_style_to_range(op, element_range)
 
@@ -638,10 +641,7 @@ class COMRenderer(BaseRenderer):
             }
 
             if op.text_align in alignment:
-                if isinstance(parent_operation, TableCell):
-                    parent_operation.render.cell_object.Range.ParagraphFormat.Alignment = alignment[op.text_align]
-                elif isinstance(parent_operation, Paragraph):
-                    element_range.ParagraphFormat.Alignment = alignment[op.text_align]
+                element_range.ParagraphFormat.Alignment = alignment[op.text_align]
 
         if op.writing_mode:
             orientations = {"vertical-lr": 1, "sideways-lr": 2}
@@ -673,3 +673,14 @@ class COMRenderer(BaseRenderer):
                     color = WordFormatter.style_to_wdcolor(op.border["color"])
                     if color:
                         img.Line.ForeColor.RGB = color
+
+        if op.padding:
+            if op.padding['top']:
+                px = WordFormatter.size_to_points(op.padding['top'])
+                if px is not None:
+                    element_range.ParagraphFormat.SpaceBefore = px
+
+            if op.padding['bottom']:
+                px = WordFormatter.size_to_points(op.padding['bottom'])
+                if px is not None:
+                    element_range.ParagraphFormat.SpaceAfter = px

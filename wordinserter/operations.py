@@ -280,7 +280,8 @@ class Format(Operation):
         "width",
         "height",
         "border",
-        "display"
+        "display",
+        "padding"
     }
 
     FORMAT_ALIASES = {
@@ -295,7 +296,7 @@ class Format(Operation):
         "text_decoration"
     }
 
-    NESTED_STYLES = {"border", "margin"}
+    NESTED_STYLES = {"border", "margin", "padding"}
 
     def has_format(self):
         return any(getattr(self, name) for name in self.optional)
