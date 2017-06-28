@@ -2,6 +2,9 @@
 CSS `padding-top` and `padding-bottom` attributes are supported. This sets the `SpaceAfter` and `SpaceBefore` 
 property on the `ParagraphFormat` object.
 
+Hooks are now fired for `Format` operations as well, with extra arguments for the original operation and 
+the range it encompasses.
+
 ## 1.0.5
 Add support for more word fields in hyperlinks. The syntax is `<a href='@CODE'>`. Currently only `FILENAME` is supported
 

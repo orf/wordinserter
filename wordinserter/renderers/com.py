@@ -558,7 +558,8 @@ class COMRenderer(BaseRenderer):
     def apply_recursive_formatting(self, stack):
         for item in stack:
             if isinstance(item, tuple):
-                self.handle_format(*item)
+                with self.with_hooks(*item):
+                    self.handle_format(*item)
             else:
                 self.apply_recursive_formatting(item)
 

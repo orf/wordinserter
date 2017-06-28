@@ -42,7 +42,7 @@ class BaseRenderer(abc.ABC):
                         raise RuntimeError("{0} has multiple renderer functions defined!".format(op.__class__))
                     self.render_methods[op] = method
 
-    def _call_hook(self, key, operation):
+    def _call_hook(self, key, operation, *args):
         cls = operation.__class__
         if key in self.hooks and cls in self.hooks[key]:
             hooks = self.hooks[key][cls]
@@ -50,16 +50,16 @@ class BaseRenderer(abc.ABC):
                 hooks = [hooks]
 
             for hook in hooks:
-                hook(operation, self)
+                hook(operation, self, *args)
 
     def new_operations(self, operations):
         return NewOperations(Group(operations))
 
     @contextlib.contextmanager
-    def with_hooks(self, operation):
-        self._call_hook("pre", operation)
+    def with_hooks(self, operation, *args):
+        self._call_hook("pre", operation, *args)
         yield
-        self._call_hook("post", operation)
+        self._call_hook("post", operation, *args)
 
     @renders(IgnoredOperation, Group)
     def ignored_element(self, *args, **kwargs):
