@@ -367,9 +367,8 @@ class Image(ChildlessOperation):
                 warnings.warn("Could not parse data URI! First 25 chars: {data}".format(data=result[:25]))
                 result, height, width = self.get_404_image_and_dimensions()
             else:
-                if not mimetype.startswith("image/") or not encoding == "base64":
-                    warnings.warn("Mimetype {0} is not an image type, or unknown encoding {1}!".format(mimetype,
-                                                                                                       encoding))
+                if encoding != "base64":
+                    warnings.warn("Encoding {0} is not valid".format(encoding))
                     result, height, width = self.get_404_image_and_dimensions()
                 else:
                     image_content = codecs.decode(bytes(data, "utf8"), "base64")

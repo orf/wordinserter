@@ -1,3 +1,6 @@
+## 1.0.7
+Accept all mimetypes in data-uri images.
+
 ## 1.0.6
 CSS `padding-top` and `padding-bottom` attributes are supported. This sets the `SpaceAfter` and `SpaceBefore` 
 property on the `ParagraphFormat` object.
