@@ -1,3 +1,6 @@
+## 1.0.8
+Bugfix for custom word fields like `'@DOCUMENT'`
+
 ## 1.0.7
 Accept all mimetypes in data-uri images.
 
