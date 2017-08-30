@@ -279,7 +279,7 @@ class COMRenderer(BaseRenderer):
             self.document.Hyperlinks.Add(Anchor=rng, TextToDisplay="", SubAddress=op.location.replace('#', '', 1))
         elif op.location.startswith('!') or op.location.startswith('@'):
             if op.location.startswith('!'):
-                text = "REF {} \h".format(op.location.replace('!', '', 1))
+                text = "REF {} \h \* charformat".format(op.location.replace('!', '', 1))
             else:
                 text = op.location.replace('@', '', 1)
                 code = text.split(' ')[0]
@@ -291,10 +291,11 @@ class COMRenderer(BaseRenderer):
                 Range=rng,
                 Type=self.constants.wdFieldEmpty,
                 Text=text,
-                PreserveFormatting=True
+                PreserveFormatting=False
             )
-            # When inserting fields, the cursor stays at the beginning, select it so it collapses to the end of it
+            # When inserting fields, the cursor stays at the beginning, select it and move the cursor to escape from it
             field.Result.Select()
+            self.selection.MoveRight()
         else:
             self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
