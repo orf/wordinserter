@@ -293,8 +293,9 @@ class COMRenderer(BaseRenderer):
                 Text=text,
                 PreserveFormatting=True
             )
-            # When inserting fields, the cursor stays at the beginning, select it so it collapses to the end of it
+            # When inserting fields, the cursor stays at the beginning, select it and move the cursor to escape from it
             field.Result.Select()
+            self.selection.MoveRight()
         else:
             self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
