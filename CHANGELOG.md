@@ -1,5 +1,5 @@
 ## 1.0.9
-Bugfix for increadibly long hyperlinks
+Bugfix for incredibly long hyperlinks
 
 ## 1.0.8
 Bugfix for custom word fields like `'@DOCUMENT'`
