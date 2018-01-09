@@ -297,7 +297,7 @@ class COMRenderer(BaseRenderer):
             field.Result.Select()
             self.selection.MoveRight()
         else:
-            self.document.Hyperlinks.Add(Anchor=rng, Address=op.location)
+            self.document.Hyperlinks.Add(Anchor=rng, Address=op.location[:2048])  # Prevent out of memory error
         self.selection.Collapse(Direction=self.constants.wdCollapseEnd)
         self.selection.Style = style
 
