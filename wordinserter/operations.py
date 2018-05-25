@@ -281,7 +281,8 @@ class Format(Operation):
         "height",
         "border",
         "display",
-        "padding"
+        "padding",
+        "line_height"
     }
 
     FORMAT_ALIASES = {

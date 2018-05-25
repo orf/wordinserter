@@ -1,4 +1,5 @@
 import warnings
+from decimal import Decimal
 
 import webcolors
 
@@ -682,3 +683,10 @@ class COMRenderer(BaseRenderer):
                 px = WordFormatter.size_to_points(op.padding['bottom'])
                 if px is not None:
                     element_range.ParagraphFormat.SpaceAfter = px
+
+        if op.line_height:
+            if op.line_height.isdecimal():
+                points = self.word.LinesToPoints(Decimal(op.line_height))
+            else:
+                points = WordFormatter.size_to_points(op.line_height)
+            element_range.ParagraphFormat.LineSpacing = points
