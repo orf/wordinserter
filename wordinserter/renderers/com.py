@@ -687,6 +687,8 @@ class COMRenderer(BaseRenderer):
         if op.line_height:
             if op.line_height.isdecimal():
                 points = self.word.LinesToPoints(Decimal(op.line_height))
+            elif op.line_height.strip().endswith('%'):
+                points = self.word.LinesToPoints(Decimal(op.line_height.split('%')[0]) / 100)
             else:
                 points = WordFormatter.size_to_points(op.line_height)
             element_range.ParagraphFormat.LineSpacing = points
