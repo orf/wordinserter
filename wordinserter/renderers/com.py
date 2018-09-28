@@ -1,4 +1,5 @@
 import warnings
+from contextlib import contextmanager
 from decimal import Decimal
 
 import webcolors
@@ -123,6 +124,14 @@ class COMRenderer(BaseRenderer):
 
         return self.document.Range(Start=start, End=end)
 
+    @contextmanager
+    def get_range(self):
+        rng = self.selection.Range.Duplicate
+        try:
+            yield rng
+        finally:
+            rng.SetRange(rng.Start, self.selection.End)
+
     @renders(Footnote)
     def footnote(self, op: Footnote):
         rng = self.selection.Range
@@ -146,14 +155,13 @@ class COMRenderer(BaseRenderer):
     def style(self, op: Style):
         # old_style = self.selection.Style
         self.selection.Style = self.document.Styles(op.name)
-        start = self.selection.Start
-        yield
-        end = self.selection.End
+        with self.get_range() as rng:
+            yield
         self.selection.TypeParagraph()
 
         if op.id:
             # Insert a bookmark
-            self.document.Bookmarks.Add(str(op.id), self.range(start, end))
+            self.document.Bookmarks.Add(str(op.id), rng)
 
     @renders(Bold)
     def bold(self, op: Bold):
@@ -223,15 +231,12 @@ class COMRenderer(BaseRenderer):
 
         new_operations = op.highlighted_operations() if op.highlight else None
 
-        start = self.selection.Start
+        with self.get_range() as rng:
+            if new_operations:
+                yield self.new_operations(new_operations)
+            else:
+                yield
 
-        if new_operations:
-            yield self.new_operations(new_operations)
-        else:
-            yield
-
-        end = self.selection.End
-        rng = self.range(start, end)
         rng.NoProofing = True
         self.selection.ParagraphFormat.SpaceAfter = 8
         self.selection.TypeParagraph()
@@ -267,14 +272,13 @@ class COMRenderer(BaseRenderer):
 
     @renders(HyperLink)
     def hyperlink(self, op: HyperLink):
-        start_range = self.selection.Range.End
-        yield
+        with self.get_range() as rng:
+            yield
         # Inserting a hyperlink that contains different styles can reset the style. IE:
         # Link<Bold<Text>> Text
         # Bold will turn bold off, but link will reset it meaning the second Text is bold.
         # Here we just reset the style after making the hyperlink.
         style = self.selection.Style
-        rng = self.document.Range(Start=start_range, End=self.selection.Range.End)
 
         if op.location.startswith('#'):
             self.document.Hyperlinks.Add(Anchor=rng, TextToDisplay="", SubAddress=op.location.replace('#', '', 1))
@@ -548,14 +552,13 @@ class COMRenderer(BaseRenderer):
 
     @renders(Format)
     def collect_format_data(self, op, parent_operation, format_stack):
-        start = self.selection.Start
-        yield
-        end = self.selection.End
+        with self.get_range() as rng:
+            yield
 
         if not op.has_style:
             return
 
-        format_stack.append((op, parent_operation, self.range(start, end)))
+        format_stack.append((op, parent_operation, rng))
 
     def apply_recursive_formatting(self, stack):
         for item in stack:
