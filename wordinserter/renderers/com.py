@@ -288,8 +288,8 @@ class COMRenderer(BaseRenderer):
             else:
                 text = op.location.replace('@', '', 1)
                 code = text.split(' ')[0]
-                # Whitelist document codes.
-                if code not in {'FILENAME'}:
+                # Whitelist field codes
+                if code not in {'FILENAME', 'STYLEREF'}:
                     return
 
             field = self.document.Fields.Add(
