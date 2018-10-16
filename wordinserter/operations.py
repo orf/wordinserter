@@ -410,6 +410,25 @@ class ListElement(Operation):
     pass
 
 
+def get_value_and_unit(css_value):
+    value, unit = None, None
+
+    if css_value:
+        if css_value.endswith('%'):
+            value = css_value[:-1]
+            unit = '%'
+        elif css_value.endswith('pt'):
+            value = css_value[:-2]
+            unit = 'pt'
+
+        try:
+            value = float(value)
+        except TypeError:
+            warnings.warn("Invalid value {0}".format(css_value))
+
+    return value, unit
+
+
 class Table(Operation):
     allowed_children = {"TableRow", "TableHead", "TableBody"}
     optional = {"border"}
@@ -440,13 +459,7 @@ class Table(Operation):
     
     @property
     def width(self):
-        if not self.format.width or not self.format.width.endswith('%'):
-            return
-
-        try:
-            return float(self.format.width[:-1])
-        except TypeError:
-            warnings.warn("Invalid table width {0}".format(self.format.width))
+        return get_value_and_unit(self.format.width)
 
     def update_child_widths(self):
         if not self.is_uniform:
@@ -457,7 +470,7 @@ class Table(Operation):
         for idx, _ in enumerate(row_widths):
             for row in self.children:
                 child = row.children[idx]
-                child_width = child.width
+                child_width, unit = child.width
                 if child_width is not None:
                     row_widths[idx] = child.format.width
                     break
@@ -484,13 +497,7 @@ class TableCell(Operation):
 
     @property
     def width(self):
-        if self.format.width is None or not self.format.width.endswith('%'):
-            return
-
-        try:
-            return float(self.format.width[:-1])
-        except TypeError:
-            warnings.warn("Invalid row width {0}".format(self.format.width))
+        return get_value_and_unit(self.format.width)
 
 
 class Footnote(ChildlessOperation):

@@ -472,20 +472,29 @@ class COMRenderer(BaseRenderer):
 
         op.render.table = table
 
-        table_width = op.width
+        table_width, unit = op.width
 
         if table_width:
-            table.PreferredWidthType = self.constants.wdPreferredWidthPercent
-            table.PreferredWidth = max(0, min(table_width, 100))
+            width_type_map = {
+                '%': self.constants.wdPreferredWidthPercent,
+                'pt': self.constants.wdPreferredWidthPoints,
+            }
+
+            if unit == '%':
+                table_width = max(0, min(table_width, 100))
+
+            table.PreferredWidthType = width_type_map[unit]
+            table.PreferredWidth = table_width
 
             for row_child in op.children:
                 for cell_child in row_child.children:
-                    cell_width = cell_child.width
+                    cell_width, unit = cell_child.width
 
                     if cell_width is not None:
                         cell_o = cell_child.render.cell_object
-                        cell_o.PreferredWidthType = self.constants.wdPreferredWidthPercent
+                        cell_o.PreferredWidthType = width_type_map[unit]
                         cell_o.PreferredWidth = cell_width
+
 
             table.AllowAutoFit = False
 
