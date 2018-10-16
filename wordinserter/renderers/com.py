@@ -603,6 +603,10 @@ class COMRenderer(BaseRenderer):
                     # We don't want to center a table.
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
 
+            if op.margin["left"] != 'auto':
+                if isinstance(parent_operation, Table):
+                    parent_operation.render.table.Rows.LeftIndent = WordFormatter.size_to_points(op.margin["left"])
+
         if op.background:
             background = op.background.split(" ")[0]
             # This needs refactoring :/
