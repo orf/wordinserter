@@ -288,8 +288,8 @@ class COMRenderer(BaseRenderer):
             else:
                 text = op.location.replace('@', '', 1)
                 code = text.split(' ')[0]
-                # Whitelist document codes.
-                if code not in {'FILENAME'}:
+                # Whitelist field codes
+                if code not in {'FILENAME', 'STYLEREF'}:
                     return
 
             field = self.document.Fields.Add(
@@ -472,20 +472,29 @@ class COMRenderer(BaseRenderer):
 
         op.render.table = table
 
-        table_width = op.width
+        table_width, unit = op.width
 
         if table_width:
-            table.PreferredWidthType = self.constants.wdPreferredWidthPercent
-            table.PreferredWidth = max(0, min(table_width, 100))
+            width_type_map = {
+                '%': self.constants.wdPreferredWidthPercent,
+                'pt': self.constants.wdPreferredWidthPoints,
+            }
+
+            if unit == '%':
+                table_width = max(0, min(table_width, 100))
+
+            table.PreferredWidthType = width_type_map[unit]
+            table.PreferredWidth = table_width
 
             for row_child in op.children:
                 for cell_child in row_child.children:
-                    cell_width = cell_child.width
+                    cell_width, unit = cell_child.width
 
                     if cell_width is not None:
                         cell_o = cell_child.render.cell_object
-                        cell_o.PreferredWidthType = self.constants.wdPreferredWidthPercent
+                        cell_o.PreferredWidthType = width_type_map[unit]
                         cell_o.PreferredWidth = cell_width
+
 
             table.AllowAutoFit = False
 
@@ -602,6 +611,10 @@ class COMRenderer(BaseRenderer):
                 if not isinstance(parent_operation, Table):
                     # We don't want to center a table.
                     element_range.ParagraphFormat.Alignment = self.constants.wdAlignParagraphCenter
+
+            if op.margin["left"] != 'auto':
+                if isinstance(parent_operation, Table):
+                    parent_operation.render.table.Rows.LeftIndent = WordFormatter.size_to_points(op.margin["left"])
 
         if op.background:
             background = op.background.split(" ")[0]
