@@ -689,6 +689,58 @@ class COMRenderer(BaseRenderer):
                     if color:
                         img.Line.ForeColor.RGB = color
 
+            if isinstance(parent_operation, (Table, TableRow, TableCell)):
+                edges = {
+                    "bottom": self.constants.wdBorderBottom,
+                    "top":  self.constants.wdBorderTop,
+                    "left": self.constants.wdBorderLeft,
+                    "right": self.constants.wdBorderRight,
+                }
+
+                # TODO: Support individual border-left, border-right, border-top and border-bottom properties
+                borders = {edge: element_range.Borders(constant) for edge, constant in edges.items()}
+
+                if op.border["style"]:
+                    style = op.border["style"]
+                    constants = {
+                        "none": self.constants.wdLineStyleNone,
+                        "solid": self.constants.wdLineStyleSingle,
+                        "dotted": self.constants.wdLineStyleDot,
+                        "dashed": self.constants.wdLineStyleDashSmallGap,
+                        "double": self.constants.wdLineStyleDouble,
+                        "inset": self.constants.wdLineStyleInset,
+                        "outset": self.constants.wdLineStyleOutset,
+                        "initial": self.word.Options.DefaultBorderLineStyle,
+                    }
+
+                    if style in constants:
+                        for border in borders.values():
+                            border.LineStyle = constants[style]
+
+                if op.border["width"]:
+                    width = WordFormatter.size_to_points(op.border["width"])
+                    # Numbers? Where we are going we don't need numbers
+                    constants = {
+                        0.25: self.constants.wdLineWidth025pt,
+                        0.5: self.constants.wdLineWidth050pt,
+                        0.75: self.constants.wdLineWidth075pt,
+                        1: self.constants.wdLineWidth100pt,
+                        1.5: self.constants.wdLineWidth150pt,
+                        2.25: self.constants.wdLineWidth225pt,
+                        3: self.constants.wdLineWidth300pt,
+                        4.5: self.constants.wdLineWidth450pt,
+                        6: self.constants.wdLineWidth600pt,
+                    }
+                    if width in constants:
+                        for border in borders.values():
+                            border.LineWidth = constants[width]
+
+                if op.border["color"]:
+                    color = WordFormatter.style_to_wdcolor(op.border["color"])
+                    if color:
+                        for border in borders.values():
+                            border.Color = color
+
         if op.padding:
             if op.padding['top']:
                 px = WordFormatter.size_to_points(op.padding['top'])
