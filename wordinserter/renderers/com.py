@@ -421,6 +421,8 @@ class COMRenderer(BaseRenderer):
         # We then enumerate through each cell in each row, and find the corresponding word cell (the actual table cell)
 
         for row_index, row in enumerate(op):
+            # Store the row object for later use
+            row.render.row_object = table.Rows(row_index+1)
             # Loop through each row and extract the corresponding Row object from Word
             row_cells = cell_mapping[row_index]
 
@@ -467,9 +469,11 @@ class COMRenderer(BaseRenderer):
                         cell_mapping[idx][column_index:column_index + cell.colspan or 0] = (None for _ in
                                                                                             range(slice_length))
 
+                # Store the cell object for later use
                 cell.render.cell_object = word_cell
                 processed_cells.add(word_cell)
 
+        # Store the table object for later use
         op.render.table = table
 
         table_width, unit = op.width
@@ -745,12 +749,38 @@ class COMRenderer(BaseRenderer):
             if op.padding['top']:
                 px = WordFormatter.size_to_points(op.padding['top'])
                 if px is not None:
-                    element_range.ParagraphFormat.SpaceBefore = px
+                    if isinstance(parent_operation, Table):
+                        parent_operation.render.table.TopPadding = px
+                    elif isinstance(parent_operation, TableCell):
+                        parent_operation.render.cell_object.TopPadding = px
+                    else:
+                        element_range.ParagraphFormat.SpaceBefore = px
 
             if op.padding['bottom']:
                 px = WordFormatter.size_to_points(op.padding['bottom'])
                 if px is not None:
-                    element_range.ParagraphFormat.SpaceAfter = px
+                    if isinstance(parent_operation, Table):
+                        parent_operation.render.table.BottomPadding = px
+                    elif isinstance(parent_operation, TableCell):
+                        parent_operation.render.cell_object.BottomPadding = px
+                    else:
+                        element_range.ParagraphFormat.SpaceAfter = px
+
+            if op.padding['left']:
+                px = WordFormatter.size_to_points(op.padding['left'])
+                if px is not None:
+                    if isinstance(parent_operation, Table):
+                        parent_operation.render.table.LeftPadding = px
+                    elif isinstance(parent_operation, TableCell):
+                        parent_operation.render.cell_object.LeftPadding = px
+
+            if op.padding['right']:
+                px = WordFormatter.size_to_points(op.padding['right'])
+                if px is not None:
+                    if isinstance(parent_operation, Table):
+                        parent_operation.render.table.RightPadding = px
+                    elif isinstance(parent_operation, TableCell):
+                        parent_operation.render.cell_object.RightPadding = px
 
         if op.line_height:
             if op.line_height.isdecimal():
