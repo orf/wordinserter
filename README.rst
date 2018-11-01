@@ -118,7 +118,7 @@ Supported Operations
 
 WordInserter currently supports a range of different operations,
 including code blocks, font size/colors, images, hyperlinks, numbered
-and bullet lists.
+and bullet lists, table borders and padding.
 
 Stylesheets?
 ^^^^^^^^^^^^
