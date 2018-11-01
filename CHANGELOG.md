@@ -1,3 +1,22 @@
+## 1.1.2
+Fix hyperlinks/styles/code sections inside textboxes
+
+Support 'margin-left' property for tables
+
+Support table widths in points as well as percent
+
+Allow STYLEREF field code
+
+Add support for table borders
+
+Support padding in tables and table cells
+
+## 1.1.1
+Add support for specifying the line-height attribute as a percentage
+
+## 1.1.0
+Add support for `line-height` CSS attribute
+
 ## 1.0.9
 Bugfix for incredibly long hyperlinks
 
