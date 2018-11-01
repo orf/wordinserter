@@ -415,14 +415,16 @@ class COMRenderer(BaseRenderer):
         ]
 
         processed_cells = set()
+        has_rowspan = False
 
         # Handling merged cells is a bitch. We do it by finding the max dimensions of the table (the max sum of all
         # colspans in a row) then creating a table with those dimensions.
         # We then enumerate through each cell in each row, and find the corresponding word cell (the actual table cell)
 
         for row_index, row in enumerate(op):
-            # Store the row object for later use
-            row.render.row_object = table.Rows(row_index+1)
+            # Store the row object for later use. This cannot be used if the table has vertically merged cells
+            row.render.row_object = table.Rows(row_index+1) if not has_rowspan else None
+
             # Loop through each row and extract the corresponding Row object from Word
             row_cells = cell_mapping[row_index]
 
@@ -451,6 +453,7 @@ class COMRenderer(BaseRenderer):
 
                 if cell.rowspan > 1:
                     # If the cell has a rowspan things get tricky.
+                    has_rowspan = True
                     if cell.colspan > 1:
                         # If it's got a colspan we need to go down the rows below it and merge those cells into
                         # a single cell, pretty much the same as above.
