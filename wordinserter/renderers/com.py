@@ -187,7 +187,9 @@ class COMRenderer(BaseRenderer):
 
     @renders(LineBreak)
     def linebreak(self, op: LineBreak):
-        if isinstance(op.parent, Paragraph) or isinstance(op.parent, Group) and op.parent.is_root_group:
+        if op.format.page_break_after == "always":
+            self.selection.InsertBreak(self.constants.wdPageBreak)
+        elif isinstance(op.parent, Paragraph) or isinstance(op.parent, Group) and op.parent.is_root_group:
             self.selection.TypeParagraph()
 
     @renders(Paragraph)
