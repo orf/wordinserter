@@ -1,3 +1,7 @@
+## 1.1.3
+
+Add support for inserting page breaks
+
 ## 1.1.2
 Fix hyperlinks/styles/code sections inside textboxes
 

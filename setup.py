@@ -21,7 +21,7 @@ if os.path.exists('README.rst'):
 
 setup(
     name='wordinserter',
-    version='1.1.2',
+    version='1.1.3',
     packages=find_packages(),
     url='https://github.com/orf/wordinserter',
     license='MIT',
